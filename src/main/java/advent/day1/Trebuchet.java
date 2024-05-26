@@ -7,7 +7,7 @@ import java.nio.file.Path;
 public class Trebuchet {
 
     public static void main(String[] args) throws IOException {
-        long result = Files.readAllLines(Path.of("src/main/resources/day1/my-data.txt"))
+        long result = Files.readAllLines(Path.of("src/main/resources/day1/my-input.txt"))
             .stream().map(Trebuchet::findNumber)
             .mapToInt(Integer::intValue)
             .sum();
