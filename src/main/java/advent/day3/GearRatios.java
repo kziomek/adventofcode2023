@@ -9,8 +9,12 @@ public class GearRatios {
     public static void main(String[] args) throws IOException {
 //        char[][] arr = loadData("src/main/resources/day3/example-part1.txt");
         char[][] arr = loadData("src/main/resources/day3/my-input.txt");
-        int result = 0;
 
+        runPart1(arr);
+    }
+
+    private static void runPart1(char[][] arr) {
+        int result = 0;
         for (int row = 0; row < arr.length; row++) {
             int num = 0;
             boolean isAdjacentToSymbol = false;
