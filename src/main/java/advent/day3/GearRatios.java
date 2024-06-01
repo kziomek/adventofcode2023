@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class GearRatios {
 
@@ -23,7 +24,6 @@ public class GearRatios {
         In first version algorithm assumed there is only one asterisk adjacent to a number and it was sufficient for given input
      */
     private static int runPart2(char[][] arr) {
-
         Map<String, List<Integer>> numbers = new HashMap<>();
         for (int row = 0; row < arr.length; row++) {
             int num = 0;
@@ -33,8 +33,7 @@ public class GearRatios {
                 if (Character.isDigit(c)) {
                     num = num * 10 + Character.digit(c, 10);
                     if (adjacentAsteriskKey.isEmpty()) {
-                        Optional<String> optionalKey =
-                            adjacentAsteriskKey = neighbouringAsterisk(arr, row, col);
+                        adjacentAsteriskKey = getFirstNeighbouringSymbolPosition(arr, row, col, GearRatios::isAsteriskSymbol);
                     }
                 }
                 //if next is not digit then add collected number and reset
@@ -66,7 +65,7 @@ public class GearRatios {
                 if (Character.isDigit(c)) {
                     num = num * 10 + Character.digit(c, 10);
                     if (!isAdjacentToSymbol) {
-                        isAdjacentToSymbol = hasNeighbouringSymbol(arr, row, col);
+                        isAdjacentToSymbol = getFirstNeighbouringSymbolPosition(arr, row, col, GearRatios::isSymbol).isPresent();
                     }
                 }
                 //if next is not digit then add collected number and reset
@@ -88,7 +87,7 @@ public class GearRatios {
             .toArray(char[][]::new);
     }
 
-    private static boolean hasNeighbouringSymbol(char[][] arr, int row, int col) {
+    private static Optional<String> getFirstNeighbouringSymbolPosition(char[][] arr, int row, int col, Function<Character, Boolean> symbolFunc) {
         for (int i = row - 1; i <= row + 1; i++) {
             for (int j = col - 1; j <= col + 1; j++) {
                 if (i < 0 || i >= arr.length) {
@@ -98,27 +97,8 @@ public class GearRatios {
                     continue;
                 }
                 char c = arr[i][j];
-                if (isSymbol(c)) {
-                    return true; // it means it's symbol
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private static Optional<String> neighbouringAsterisk(char[][] arr, int row, int col) {
-        for (int i = row - 1; i <= row + 1; i++) {
-            for (int j = col - 1; j <= col + 1; j++) {
-                if (i < 0 || i >= arr.length) {
-                    continue;
-                }
-                if (j < 0 || j >= arr[0].length) {
-                    continue;
-                }
-                char c = arr[i][j];
-                if (c == '*') {
-                    return Optional.of(i + "_" + j); // it means there is adjacent * symbol
+                if (symbolFunc.apply(c)) {
+                    return Optional.of(i + "_" + j); // it means it's symbol
                 }
             }
         }
@@ -128,5 +108,9 @@ public class GearRatios {
 
     private static boolean isSymbol(char c) {
         return !Character.isDigit(c) && c != '.';
+    }
+
+    private static boolean isAsteriskSymbol(char c) {
+        return c == '*';
     }
 }
