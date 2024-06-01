@@ -3,17 +3,60 @@ package advent.day3;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class GearRatios {
 
     public static void main(String[] args) throws IOException {
-//        char[][] arr = loadData("src/main/resources/day3/example-part1.txt");
+        //        char[][] arr = loadData("src/main/resources/day3/example-part1.txt");
         char[][] arr = loadData("src/main/resources/day3/my-input.txt");
 
-        runPart1(arr);
+        System.out.println(runPart1(arr));
+        System.out.println(runPart2(arr));
     }
 
-    private static void runPart1(char[][] arr) {
+    /*
+        In first version algorithm assumed there is only one asterisk adjacent to a number and it was sufficient for given input
+     */
+    private static int runPart2(char[][] arr) {
+
+        Map<String, List<Integer>> numbers = new HashMap<>();
+        for (int row = 0; row < arr.length; row++) {
+            int num = 0;
+            Optional<String> adjacentAsteriskKey = Optional.empty();
+            for (int col = 0; col < arr[0].length; col++) {
+                char c = arr[row][col];
+                if (Character.isDigit(c)) {
+                    num = num * 10 + Character.digit(c, 10);
+                    if (adjacentAsteriskKey.isEmpty()) {
+                        Optional<String> optionalKey =
+                            adjacentAsteriskKey = neighbouringAsterisk(arr, row, col);
+                    }
+                }
+                //if next is not digit then add collected number and reset
+                if (col + 1 == arr[0].length || !Character.isDigit(arr[row][col + 1])) {
+                    if (adjacentAsteriskKey.isPresent()) {
+                        numbers.computeIfAbsent(adjacentAsteriskKey.get(), k -> new LinkedList<>()).add(num);
+                    }
+                    num = 0;
+                    adjacentAsteriskKey = Optional.empty();
+                }
+            }
+        }
+
+        return numbers.values()
+            .stream()
+            .filter(list -> list.size() == 2)
+            .map(list -> list.getFirst() * list.getLast())
+            .mapToInt(i -> i)
+            .sum();
+    }
+
+    private static int runPart1(char[][] arr) {
         int result = 0;
         for (int row = 0; row < arr.length; row++) {
             int num = 0;
@@ -36,7 +79,7 @@ public class GearRatios {
                 }
             }
         }
-        System.out.println(result);
+        return result;
     }
 
     private static char[][] loadData(String path) throws IOException {
@@ -62,6 +105,25 @@ public class GearRatios {
         }
 
         return false;
+    }
+
+    private static Optional<String> neighbouringAsterisk(char[][] arr, int row, int col) {
+        for (int i = row - 1; i <= row + 1; i++) {
+            for (int j = col - 1; j <= col + 1; j++) {
+                if (i < 0 || i >= arr.length) {
+                    continue;
+                }
+                if (j < 0 || j >= arr[0].length) {
+                    continue;
+                }
+                char c = arr[i][j];
+                if (c == '*') {
+                    return Optional.of(i + "_" + j); // it means there is adjacent * symbol
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
     private static boolean isSymbol(char c) {
