@@ -1,6 +1,7 @@
 package advent.day4;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -15,10 +16,11 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 public class Scratchcard {
 
     public static void main(String[] args) throws IOException {
-//        List<Card> cards = Parser.parse("src/main/resources/day4/example-part1.txt");
+        //        List<Card> cards = Parser.parse("src/main/resources/day4/example-part1.txt");
         List<Card> cards = Parser.parse("src/main/resources/day4/my-input.txt");
 
         System.out.println(runPart1(cards));
+        System.out.println(runPart2(cards));
     }
 
     private static int runPart1(List<Card> cards) {
@@ -27,5 +29,23 @@ public class Scratchcard {
             .map(Card::cardValue)
             .mapToInt(i -> i)
             .sum();
+    }
+
+    private static int runPart2(List<Card> cards) {
+        int[] cardCounts = new int[cards.size() + 1];
+        for (int i = 1; i < cardCounts.length; i++) {
+            cardCounts[i] = 1;
+        }
+
+        for (Card card : cards) {
+            int id = card.getId();
+            long value = card.matchingNumbersCount();
+
+            for (int i = 1; i <= value; i++) {
+                cardCounts[id + i] = cardCounts[id + i] + cardCounts[id];
+            }
+        }
+
+        return Arrays.stream(cardCounts).sum();
     }
 }

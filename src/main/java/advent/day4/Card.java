@@ -11,10 +11,22 @@ Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
  */
 public class Card {
+
+    private int id;
     private Set<Integer> winningNumbers;
     private Set<Integer> numbersYouHave;
 
+    public int getId() {
+        return id;
+    }
+
     public Card(Set<Integer> winningNumbers, Set<Integer> numbersYouHave) {
+        this.winningNumbers = winningNumbers;
+        this.numbersYouHave = numbersYouHave;
+    }
+
+    public Card(int id, Set<Integer> winningNumbers, Set<Integer> numbersYouHave) {
+        this.id = id;
         this.winningNumbers = winningNumbers;
         this.numbersYouHave = numbersYouHave;
     }
@@ -28,5 +40,12 @@ public class Card {
             return 0;
         }
         return (int) Math.pow(2, count - 1);
+    }
+
+    public long matchingNumbersCount() {
+        return numbersYouHave
+            .stream()
+            .filter(n -> winningNumbers.contains(n))
+            .count();
     }
 }

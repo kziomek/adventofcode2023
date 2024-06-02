@@ -14,14 +14,17 @@ public class Parser {
         return Files.readAllLines(Path.of(path))
             .stream()
             .map(line -> {
+                String[] cardName = line.split(":")[0].split(" ");
+                int id = Integer.parseInt(cardName[cardName.length - 1]);
+
                 String[] numberLists = line.split(":")[1].split("\\|");
-                return new Card(parseNumbers(numberLists[0]), parseNumbers(numberLists[1]));
+                return new Card(id, parseNumbers(numberLists[0]), parseNumbers(numberLists[1]));
             }).toList();
     }
 
     private static Set<Integer> parseNumbers(String numberList) {
         return Arrays.stream(numberList.trim().split(" "))
-            .filter( s -> !s.isEmpty())
+            .filter(s -> !s.isEmpty())
             .map(Integer::valueOf)
             .collect(Collectors.toSet());
     }
