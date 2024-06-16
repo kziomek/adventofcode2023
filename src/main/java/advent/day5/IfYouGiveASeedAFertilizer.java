@@ -11,9 +11,19 @@ public class IfYouGiveASeedAFertilizer {
         Almanac almanac = Parser.parse("src/main/resources/day5/example-part1.txt");
         //                        Almanac almanac = Parser.parse("src/main/resources/day5/my-input.txt"); //Result 59370572
 
-        //        System.out.println("Lowest location " + almanac.process());
+//                System.out.println("Lowest location " + almanac.process());
         //806029445 - part1
 
+        runPart2(almanac);
+
+
+    }
+
+    private static void runPart1(Almanac almanac) {
+
+    }
+
+    private static void runPart2(Almanac almanac) {
         List<Range> locationRange = List.of(new Range(0, Long.MAX_VALUE));
 
         System.out.println("Flatten Location Destination Ranges");
@@ -68,10 +78,6 @@ public class IfYouGiveASeedAFertilizer {
         long result = almanac.processSeeds(seeds);
 
         System.out.println("Result " + result);
-    }
-
-    private void runPart2() {
-
     }
 
     private static List<Range> filterByAlmanacSeedRange(List<Range> flattenedSeedRanges, Almanac almanac) {

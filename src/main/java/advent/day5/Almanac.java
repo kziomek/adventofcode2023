@@ -54,7 +54,6 @@ public class Almanac {
     }
 
     public long seedToLocation(Long seed) {
-
         long soil = matchAlmanacMap(seedsToSoilMaps, seed).map(a -> a.mapDestination(seed)).orElse(seed);
         long fertilizer = matchAlmanacMap(soilToFertilizerMaps, soil).map(a -> a.mapDestination(soil)).orElse(soil);
         long water = matchAlmanacMap(fertilizerToWaterMaps, fertilizer).map(a -> a.mapDestination(fertilizer)).orElse(fertilizer);
