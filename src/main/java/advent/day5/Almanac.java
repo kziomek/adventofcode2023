@@ -54,6 +54,7 @@ public class Almanac {
     }
 
     public long seedToLocation(Long seed) {
+
         long soil = matchAlmanacMap(seedsToSoilMaps, seed).map(a -> a.mapDestination(seed)).orElse(seed);
         long fertilizer = matchAlmanacMap(soilToFertilizerMaps, soil).map(a -> a.mapDestination(soil)).orElse(soil);
         long water = matchAlmanacMap(fertilizerToWaterMaps, fertilizer).map(a -> a.mapDestination(fertilizer)).orElse(fertilizer);
@@ -64,9 +65,36 @@ public class Almanac {
         return location;
     }
 
-
     private Optional<AlmanacMap> matchAlmanacMap(List<AlmanacMap> maps, Long source) {
         return maps.stream().filter(am -> am.match(source)).findFirst();
+    }
+
+    public List<Range> getHumidityToLocationDestRanges() {
+        return getDestinationRanges(this.humidityToLocationMaps);
+    }
+
+    public List<Range> getTemperatureToHumidityRanges() {
+        return getDestinationRanges(this.temperatureToHumidityMaps);
+    }
+
+    public List<Range> getLightToTemperatureDestRanges() {
+        return getDestinationRanges(this.lightToTemperatureMaps);
+    }
+
+    public List<Range> getWaterToLightDestRanges() {
+        return getDestinationRanges(this.waterToLightMaps);
+    }
+
+    public List<Range> getFertilizerToWaterDestRanges() {
+        return getDestinationRanges(this.fertilizerToWaterMaps);
+    }
+
+    public List<Range> getSoilToFertilizerDestRanges() {
+        return getDestinationRanges(this.soilToFertilizerMaps);
+    }
+
+    public List<Range> getSeedToSoilDestRanges() {
+        return getDestinationRanges(this.seedsToSoilMaps);
     }
 
     public List<Range> getSeedRanges() {
@@ -75,5 +103,9 @@ public class Almanac {
             ranges.add(new Range(seeds.get(i), seeds.get(i) + seeds.get(i + 1) - 1));
         }
         return ranges;
+    }
+
+    private static List<Range> getDestinationRanges(List<AlmanacMap> almanacMaps) {
+        return almanacMaps.stream().map(AlmanacMap::getDestinationRange).toList();
     }
 }

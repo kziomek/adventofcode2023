@@ -20,8 +20,9 @@ public class RangeUtils {
     }
 
     public static List<Range> flatten(List<Range> list1, List<Range> list2) {
-        System.out.println("Flatten Start ");
+        System.out.println("list 1:");
         print(list1);
+        System.out.println("list 2:");
         print(list2);
 
         List<Position> positions = new ArrayList<>();
@@ -52,6 +53,9 @@ public class RangeUtils {
                 flattenedRanges.add(new Range(left, right));
             }
         }
+
+        System.out.println("Flattened lists:");
+        print(flattenedRanges);
 
         return flattenedRanges;
     }

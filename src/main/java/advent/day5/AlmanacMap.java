@@ -1,5 +1,7 @@
 package advent.day5;
 
+import java.util.List;
+
 public class AlmanacMap {
     long destinationRangeStart;
     long sourceRangeStart;
@@ -13,6 +15,10 @@ public class AlmanacMap {
 
     public boolean match(long source) {
         return source >= sourceRangeStart && source < sourceRangeStart + rangeLength;
+    }
+
+    public boolean matchByDestination(Range range) {
+        return range.start >= destinationRangeStart && range.start <destinationRangeStart + rangeLength;
     }
 
     public long mapDestination(long source) {
