@@ -6,9 +6,11 @@ import java.util.List;
 
 public class IfYouGiveASeedAFertilizer {
 
+    //part 2 result 59370572
+
     public static void main(String[] args) throws IOException {
         Almanac almanac = Parser.parse("src/main/resources/day5/example-part1.txt");
-//                Almanac almanac = Parser.parse("src/main/resources/day5/my-input.txt");
+//                Almanac almanac = Parser.parse("src/main/resources/day5/my-input.txt"); //Result 59370572
 
         //        System.out.println("Lowest location " + almanac.process());
         //806029445 - part1
@@ -116,7 +118,7 @@ public class IfYouGiveASeedAFertilizer {
 
         List<Long> seeds = rangesWithinSeeds.stream().map(range -> range.start).toList();
         long result = almanac.processSeeds(seeds);
-        System.out.println("Result" + result);
+        System.out.println("Result " + result);
     }
 
     private static List<Range> mapRanges(List<Range> flattenedLocationDestinationRanges, List<AlmanacMap> almanacMaps) {
