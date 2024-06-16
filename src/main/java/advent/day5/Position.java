@@ -12,6 +12,12 @@ public class Position implements Comparable<Position> {
     @Override
     public int compareTo(Position other) {
         if (this.pos == other.pos) {
+            if (this.isStart) {
+                return -1;
+            }
+            if (other.isStart) {
+                return 1;
+            }
             return 0;
         }
         return this.pos > other.pos ? 1 : -1;

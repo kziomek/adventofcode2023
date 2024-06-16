@@ -9,8 +9,8 @@ public class IfYouGiveASeedAFertilizer {
     //part 2 result 59370572
 
     public static void main(String[] args) throws IOException {
-        Almanac almanac = Parser.parse("src/main/resources/day5/example-part1.txt");
-//                Almanac almanac = Parser.parse("src/main/resources/day5/my-input.txt"); //Result 59370572
+//        Almanac almanac = Parser.parse("src/main/resources/day5/example-part1.txt");
+                Almanac almanac = Parser.parse("src/main/resources/day5/my-input.txt"); //Result 59370572
 
         //        System.out.println("Lowest location " + almanac.process());
         //806029445 - part1
