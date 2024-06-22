@@ -1,4 +1,4 @@
-package advent.day5;
+package advent.day5.archive;
 
 public class Range {
 

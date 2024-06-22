@@ -1,4 +1,4 @@
-package advent.day5;
+package advent.day5.archive;
 
 import java.io.IOException;
 import java.util.List;

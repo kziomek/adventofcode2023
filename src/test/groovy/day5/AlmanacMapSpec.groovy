@@ -1,6 +1,6 @@
 package day5
 
-import advent.day5.AlmanacMap
+import advent.day5.part2.AlmanacMap
 import spock.lang.Specification
 
 
