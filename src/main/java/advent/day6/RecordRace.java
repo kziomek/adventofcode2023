@@ -1,19 +1,19 @@
 package advent.day6;
 
 public class RecordRace {
-    private int time;
-    private int distance;
+    private long time;
+    private long distance;
 
-    public RecordRace(int time, int distance) {
+    public RecordRace(long time, long distance) {
         this.time = time;
         this.distance = distance;
     }
 
-    public int getTime() {
+    public long getTime() {
         return time;
     }
 
-    public int getDistance() {
+    public long getDistance() {
         return distance;
     }
 }

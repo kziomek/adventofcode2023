@@ -6,18 +6,32 @@ import java.util.List;
 public class WaitForIt {
 
     public static void main(String[] args) throws IOException {
-
+        // ----------- PART 1 --------------
         //        List<RecordRace> recordRaces = Parser.parse("src/main/resources/day6/example.txt");
         List<RecordRace> recordRaces = Parser.parse("src/main/resources/day6/my-input.txt"); // part-1 512295
 
-        int result = recordRaces
+        long result = recordRaces
             .stream()
             .map(WaitForIt::calculate)
-            .mapToInt(i -> i)
+            .mapToLong(i -> i)
             .filter(i -> i > 0)
             .reduce(1, (a, b) -> a * b);
 
         System.out.println(result);
+
+        // ----------- PART 2 --------------
+        RecordRace part2RaceExample = new RecordRace(71530, 940200);
+        long part2ExampleResult = calculate(part2RaceExample);
+        System.out.println("Part 2 Example result: " + part2ExampleResult);
+
+
+        RecordRace part2Race = new RecordRace(46807866, 214117714021024L);
+        long part2Result = calculate(part2Race);
+        long part2ResultOfQuadraticEquation = calculateWithQuadraticEquation(part2Race);
+        System.out.println("Part 2 result: " + part2Result);
+        System.out.println("Part 2 result of quadratic equation: " + part2ResultOfQuadraticEquation);
+
+        // part 2 result 36530883
     }
 
     /*
@@ -30,10 +44,10 @@ public class WaitForIt {
          x2 =  (-time - sqrtDelta) / -2
      */
 
-    private static int calculateWithQuadraticEquation(RecordRace recordRace) {
-        int time = recordRace.getTime();
-        int maxDistance = recordRace.getDistance();
-        int delta = time * time - 4 * maxDistance;
+    private static long calculateWithQuadraticEquation(RecordRace recordRace) {
+        long time = recordRace.getTime();
+        long maxDistance = recordRace.getDistance();
+        long delta = time * time - 4 * maxDistance;
         double sqrtDelta = Math.sqrt(delta);
 
         double x1 = (-time + sqrtDelta) / -2;
@@ -44,16 +58,16 @@ public class WaitForIt {
 
         double r = x2 - x1 + 1;
 
-        return (int) r;
+        return (long) r;
     }
 
-    private static int calculate(RecordRace recordRace) {
-        int time = recordRace.getTime();
-        int maxDistance = recordRace.getDistance();
+    private static long calculate(RecordRace recordRace) {
+        long time = recordRace.getTime();
+        long maxDistance = recordRace.getDistance();
 
         // count left
-        int distance = 0;
-        int left = 0;
+        long distance = 0;
+        long left = 0;
         while (distance <= maxDistance && left < time) {
             left++;
             distance = left * (time - left);
@@ -62,7 +76,7 @@ public class WaitForIt {
 
         // count right
         distance = 0;
-        int right = time;
+        long right = time;
         while (distance <= maxDistance && right > 0) {
             right--;
             distance = right * (time - right);
