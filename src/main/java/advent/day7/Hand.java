@@ -48,7 +48,7 @@ public class Hand implements Comparable<Hand> {
             case 'Q':
                 return 12;
             case 'J':
-                return 11;
+                return 1;
             case 'T':
                 return 10;
             default:
@@ -71,10 +71,35 @@ public class Hand implements Comparable<Hand> {
             map.merge(hand[i], 1, Integer::sum);
         }
 
+        return evaluateTypeWithJoker(map);
+    }
+
+    private int evaluateTypeWithJoker(Map<Integer, Integer> map) {
+        Integer jokerCount = map.get(1);
+        int maxType = evaluateType(map);
+        if (jokerCount == null) {
+            return maxType;
+        }
+
+        for (Integer key : map.keySet()) {
+            if (key == 1) {
+                continue;
+            }
+            Map<Integer, Integer> mapWithJokers = new HashMap<>(map);
+
+            mapWithJokers.merge(key, jokerCount, Integer::sum);
+            mapWithJokers.remove(1);
+
+            maxType = Math.max(maxType, evaluateType(mapWithJokers));
+        }
+
+        return maxType;
+    }
+
+    private int evaluateType(Map<Integer, Integer> map) {
         if (map.size() == 1) {
             return 7;
         }
-
         if (map.size() == 2) {
             if (map.containsValue(4)) {
                 return 6;
@@ -90,7 +115,6 @@ public class Hand implements Comparable<Hand> {
                 return 3;
             }
         }
-
         if (map.size() == 4) {
             return 2;
         }

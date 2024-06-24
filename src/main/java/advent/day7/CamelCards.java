@@ -7,7 +7,7 @@ import java.util.List;
 public class CamelCards {
 
     public static void main(String[] args) throws IOException {
-        //        List<Hand> hands = Parser.parse("src/main/resources/day7/example.txt");
+//                List<Hand> hands = Parser.parse("src/main/resources/day7/example.txt");
         List<Hand> hands = Parser.parse("src/main/resources/day7/my-input.txt"); //251287184
 
         long totalWinning = part1(hands);
