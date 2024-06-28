@@ -3,6 +3,7 @@ package advent.day8;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +34,16 @@ public class Parser {
             source.setRight(right);
         }
 
+        List<Node> starts = new ArrayList<>();
+
+        for (String key : nodes.keySet()) {
+            if (key.endsWith("A")) {
+                starts.add(nodes.get(key));
+            }
+        }
+
         String instructions = list.get(0)[0];
 
-        return new Input(nodes.get("AAA"), instructions);
-
+        return new Input(starts, instructions);
     }
 }

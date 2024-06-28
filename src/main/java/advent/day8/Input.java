@@ -9,8 +9,8 @@ public class Input {
 
     private String instructions;
 
-    public Input(Node start, String instructions) {
-        this.starts.add(start);
+    public Input(List<Node> starts, String instructions) {
+        this.starts = starts;
         this.instructions = instructions;
     }
 
