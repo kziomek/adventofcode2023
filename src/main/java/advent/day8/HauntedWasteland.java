@@ -16,7 +16,7 @@ public class HauntedWasteland {
     }
 
     private static int runPart1(Input input) {
-        Node start = input.getStart();
+        Node start = input.getStarts().get(0);
         String instructions = input.getInstructions();
 
         int steps = 0;
