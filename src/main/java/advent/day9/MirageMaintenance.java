@@ -7,22 +7,40 @@ import java.util.List;
 public class MirageMaintenance {
 
     public static void main(String[] args) throws IOException {
-        List<List<Long>> input = Parser.parse("src/main/resources/day9/example.txt");
-//        List<List<Long>> input = Parser.parse("src/main/resources/day9/my-input.txt");
-        long result = input.stream()
-            .map(MirageMaintenance::extrapolate)
+//        List<List<Long>> input = Parser.parse("src/main/resources/day9/example.txt");
+        List<List<Long>> input = Parser.parse("src/main/resources/day9/my-input.txt");
+        long extrapolatedLast = input.stream()
+            .map(MirageMaintenance::extrapolateLast)
             .mapToLong(i -> i)
             .sum();
 
-        System.out.println(result);
+        System.out.println(extrapolatedLast);
+
+        long extrapolatedFirst = input.stream()
+            .map(MirageMaintenance::extrapolateFirst)
+            .mapToLong(i -> i)
+            .sum();
+
+        System.out.println(extrapolatedFirst);
     }
 
-    private static long extrapolate(List<Long> values) {
+
+    private static long extrapolateFirst(List<Long> values) {
         if (allZeros(values)) {
             return 0;
         }
         List<Long> diffs = calculateDiffs(values);
-        long result = extrapolate(diffs);
+        long result = extrapolateFirst(diffs);
+        return values.getFirst() - result;
+    }
+
+
+    private static long extrapolateLast(List<Long> values) {
+        if (allZeros(values)) {
+            return 0;
+        }
+        List<Long> diffs = calculateDiffs(values);
+        long result = extrapolateLast(diffs);
         return result + values.getLast();
     }
 
