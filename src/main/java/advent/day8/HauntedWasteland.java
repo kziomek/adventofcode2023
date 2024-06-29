@@ -29,8 +29,11 @@ public class HauntedWasteland {
         List<Long> ends = currentNodes.stream().map(node -> runPart1(node, instructions)).toList();
 
         for (Long end : ends) {
-            LCM.printPrimaFactors(end);
+            LowestCommonMultiple.getPrimaFactors(end);
         }
+
+        long lcm = LowestCommonMultiple.lcm(ends);
+        System.out.println("Lowest Common Multiple is " + lcm);
 
         /*
         In my example prime factors for each of results are:
