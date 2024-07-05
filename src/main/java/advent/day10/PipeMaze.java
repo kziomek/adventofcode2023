@@ -12,6 +12,10 @@ public class PipeMaze {
     private static final int SOUTH = 3;
     private static final int WEST = 4;
 
+    //TODO BFS for part 1
+    //TODO Ray Casting Algorithm for part 1
+
+
     public static void main(String[] args) throws IOException {
         //        char[][] field = Parser.parse("src/main/resources/day10/example1.txt");
         //        char[][] field = Parser.parse("src/main/resources/day10/example2.txt");
