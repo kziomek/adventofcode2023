@@ -27,33 +27,28 @@ public class Expander {
                 }
             }
         }
-
         int rowOffset = 0;
         char[][] expanded = new char[arr.length + rowExpansions][arr[0].length + colExpansions];
-        for (int i = 0; i < arr.length; i++) {
-            if (!rowHasGalaxy[i]) {
-                int colOffset = 0;
-                for (int j = 0; j < arr[0].length; j++) {
-                    if (!colHasGalaxy[j]) {
-                        expanded[i + rowOffset][j + colOffset] = arr[i][j];
-                        colOffset++;
-                    }
-                    expanded[i + rowOffset][j + colOffset] = arr[i][j];
-                }
+        for (int row = 0; row < arr.length; row++) {
+            fillCol(arr, expanded, row, rowOffset, colHasGalaxy);
+            if (!rowHasGalaxy[row]) {
                 rowOffset++;
-            }
-            int colOffset = 0;
-            for (int j = 0; j < arr[0].length; j++) {
-                if (!colHasGalaxy[j]) {
-                    expanded[i + rowOffset][j + colOffset] = arr[i][j];
-                    colOffset++;
-                }
-                expanded[i + rowOffset][j + colOffset] = arr[i][j];
+                fillCol(arr, expanded, row, rowOffset, colHasGalaxy);
             }
         }
-
         System.out.println("rowExpansions: " + (rowExpansions));
         System.out.println("colExpansions: " + (colExpansions));
         return expanded;
+    }
+
+    private static void fillCol(char[][] arr, char[][] expanded, int row, int rowOffset, boolean[] colHasGalaxy) {
+        int colOffset = 0;
+        for (int col = 0; col < arr[0].length; col++) {
+            expanded[row + rowOffset][col + colOffset] = arr[row][col];
+            if (!colHasGalaxy[col]) {
+                colOffset++;
+                expanded[row + rowOffset][col + colOffset] = arr[row][col];
+            }
+        }
     }
 }
