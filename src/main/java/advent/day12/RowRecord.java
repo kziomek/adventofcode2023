@@ -1,9 +1,7 @@
 package advent.day12;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 public class RowRecord {
@@ -15,11 +13,14 @@ public class RowRecord {
         String[] parts = input.split(" ");
         validationList = new LinkedList<>(Arrays.stream(parts[1].split(",")).map(Integer::valueOf).toList());
         conditionRecord = parts[0];
+        unfold();
+        removeLeadingDots();
     }
 
     public RowRecord(String conditionRecord, Queue<Integer> validationList) {
         this.conditionRecord = conditionRecord;
         this.validationList = validationList;
+        removeLeadingDots();
     }
 
     public void removeLeadingGroup() {
@@ -28,6 +29,7 @@ public class RowRecord {
             i++;
         }
         conditionRecord = conditionRecord.substring(i);
+        removeLeadingDots();
     }
 
     public void removeLeadingDots() {
@@ -36,23 +38,11 @@ public class RowRecord {
             i++;
         }
         conditionRecord = conditionRecord.substring(i);
-        //        if (i == conditionRecord.length() ){
-        //            conditionRecord = "";
-        //        } else {
-        //            conditionRecord = conditionRecord.substring(i);
-        //        }
-
     }
 
     // return -1 when ? present in group
     public int firstGroupSize() {
-
         int i = 0;
-
-        // skip .
-        while (i < conditionRecord.length() && conditionRecord.charAt(i) == '.') {
-            i++;
-        }
 
         if (i == conditionRecord.length()) {
             return 0;
@@ -93,34 +83,16 @@ public class RowRecord {
         validationList = list;
     }
 
-    //    public boolean isValid() {
-    //        List<Integer> groups = new ArrayList<>();
-    //
-    //        int count = 0;
-    //        for (int i = 0; i < conditionRecord.length(); i++) {
-    //            char c = conditionRecord.charAt(i);
-    //
-    //            if (c == '#') {
-    //                count++;
-    //            }
-    //            if (c == '.' && count > 0) {
-    //                groups.add(count);
-    //                count = 0;
-    //            }
-    //        }
-    //        if (count > 0) {
-    //            groups.add(count);
-    //        }
-    //
-    //        if (validationList.size() != groups.size()) {
-    //            return false;
-    //        }
-    //        for (int i = 0; i < validationList.size(); i++) {
-    //            if (validationList.get(i) != groups.get(i)) {
-    //                return false;
-    //            }
-    //        }
-    //
-    //        return true;
-    //    }
+    public boolean isFirstGroupBiggerThenExpected() {
+        int count = 0;
+        int i = 0;
+        while (i < conditionRecord.length() && conditionRecord.charAt(i) == '#') {
+            count++;
+            i++;
+        }
+
+        int max = validationList.peek() == null ? 0 : validationList.peek();
+        return count > max;
+    }
+
 }
