@@ -4,21 +4,22 @@ import java.io.IOException;
 
 public class ParabolicReflectorDish {
 
+    // 14 cycles repetition pattern
+    // 1000th elem is 103861
+    // 1000 + 71428500 * 14 = 1000000000
     public static void main(String[] args) throws IOException {
-        char[][] dish = Parser.parse("src/main/resources/day14/example.txt");
-        //        char[][] dish = Parser.parse("src/main/resources/day14/my-input.txt");
+//        char[][] dish = Parser.parse("src/main/resources/day14/example.txt");
+                        char[][] dish = Parser.parse("src/main/resources/day14/my-input.txt");
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 1000; i++) {
             tiltToNorth(dish);
             tiltToWest(dish);
             tiltToSouth(dish);
             tiltToEast(dish);
-            print(dish);
+            //            print(dish);
+            int weight = calculateWeight(dish);
+            System.out.println(i + " " + weight);
         }
-
-        //        int weight = calculateWeight(dish);
-
-        //        System.out.println(weight);
     }
 
     private static int calculateWeight(char[][] dish) {
