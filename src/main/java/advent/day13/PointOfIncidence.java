@@ -7,7 +7,7 @@ public class PointOfIncidence {
 
     public static void main(String[] args) throws IOException {
 
-        //        List<char[][]> grids = Parser.parse("src/main/resources/day13/example.txt");
+        //                List<char[][]> grids = Parser.parse("src/main/resources/day13/example.txt");
         List<char[][]> grids = Parser.parse("src/main/resources/day13/my-input.txt");
 
         int result = calculate(grids);
@@ -42,17 +42,21 @@ public class PointOfIncidence {
     private static boolean reflectsVertically(char[][] grid, int col) {
         int l = col;
         int r = col + 1;
+        int smudge = 0;
 
         while (l >= 0 && r < grid[0].length) {
             for (int j = 0; j < grid.length; j++) {
                 if (grid[j][l] != grid[j][r]) {
-                    return false;
+                    smudge++;
+                    if (smudge > 1) {
+                        return false;
+                    }
                 }
             }
             l--;
             r++;
         }
-        return true;
+        return smudge == 1;
     }
 
     private static int calculateRow(char[][] grid) {
@@ -67,17 +71,21 @@ public class PointOfIncidence {
     private static boolean reflectsHorizontaly(char[][] grid, int row) {
         int top = row;
         int bottom = row + 1;
+        int smudge = 0;
 
         while (top >= 0 && bottom < grid.length) {
 
             for (int i = 0; i < grid[0].length; i++) {
                 if (grid[top][i] != grid[bottom][i]) {
-                    return false;
+                    smudge++;
+                    if (smudge > 1) {
+                        return false;
+                    }
                 }
             }
             top--;
             bottom++;
         }
-        return true;
+        return smudge == 1;
     }
 }
