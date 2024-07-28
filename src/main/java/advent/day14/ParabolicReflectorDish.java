@@ -1,17 +1,24 @@
 package advent.day14;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 public class ParabolicReflectorDish {
 
     public static void main(String[] args) throws IOException {
-//        char[][] dish = Parser.parse("src/main/resources/day14/example.txt");
-        char[][] dish = Parser.parse("src/main/resources/day14/my-input.txt");
-        tiltToNorht(dish);
-        int weight = calculateWeight(dish);
+        char[][] dish = Parser.parse("src/main/resources/day14/example.txt");
+        //        char[][] dish = Parser.parse("src/main/resources/day14/my-input.txt");
 
-        System.out.println(weight);
+        for (int i = 1; i <= 3; i++) {
+            tiltToNorth(dish);
+            tiltToWest(dish);
+            tiltToSouth(dish);
+            tiltToEast(dish);
+            print(dish);
+        }
+
+        //        int weight = calculateWeight(dish);
+
+        //        System.out.println(weight);
     }
 
     private static int calculateWeight(char[][] dish) {
@@ -26,13 +33,13 @@ public class ParabolicReflectorDish {
         return totalWeight;
     }
 
-    private static void tiltToNorht(char[][] dish) {
+    private static void tiltToNorth(char[][] dish) {
         for (int col = 0; col < dish[0].length; col++) {
-            roll(dish, col);
+            rollNorth(dish, col);
         }
     }
 
-    private static void roll(char[][] dish, int col) {
+    private static void rollNorth(char[][] dish, int col) {
         int i = 0, j = 0;
         while (j < dish.length) {
             if (i == j && (dish[i][col] == 'O' || dish[i][col] == '#')) {
@@ -57,5 +64,114 @@ public class ParabolicReflectorDish {
                 i = j;
             }
         }
+    }
+
+    private static void tiltToSouth(char[][] dish) {
+        for (int col = 0; col < dish[0].length; col++) {
+            rollSouth(dish, col);
+        }
+    }
+
+    private static void rollSouth(char[][] dish, int col) {
+        int i = dish.length - 1, j = dish.length - 1;
+        while (j >= 0) {
+            if (i == j && (dish[i][col] == 'O' || dish[i][col] == '#')) {
+                i--;
+                j--;
+                continue;
+            }
+            if (dish[j][col] == '.') {
+                j--;
+                continue;
+            }
+
+            if (dish[j][col] == 'O') {
+                dish[i][col] = 'O';
+                dish[j][col] = '.';
+                i--;
+                j--;
+                continue;
+            }
+            if (dish[j][col] == '#') {
+                j--;
+                i = j;
+            }
+        }
+    }
+
+    private static void tiltToWest(char[][] dish) {
+        for (int row = 0; row < dish.length; row++) {
+            rollWest(dish, row);
+        }
+    }
+
+    private static void rollWest(char[][] dish, int row) {
+        int i = 0, j = 0;
+        while (j < dish.length) {
+            if (i == j && (dish[row][i] == 'O' || dish[row][i] == '#')) {
+                i++;
+                j++;
+                continue;
+            }
+            if (dish[row][j] == '.') {
+                j++;
+                continue;
+            }
+
+            if (dish[row][j] == 'O') {
+                dish[row][i] = 'O';
+                dish[row][j] = '.';
+                i++;
+                j++;
+                continue;
+            }
+            if (dish[row][j] == '#') {
+                j++;
+                i = j;
+            }
+        }
+    }
+
+    private static void tiltToEast(char[][] dish) {
+        for (int row = 0; row < dish.length; row++) {
+            rollEast(dish, row);
+        }
+    }
+
+    private static void rollEast(char[][] dish, int row) {
+        int i = dish[0].length - 1, j = dish[0].length - 1;
+        while (j >= 0) {
+            if (i == j && (dish[row][i] == 'O' || dish[row][i] == '#')) {
+                i--;
+                j--;
+                continue;
+            }
+            if (dish[row][j] == '.') {
+                j--;
+                continue;
+            }
+
+            if (dish[row][j] == 'O') {
+                dish[row][i] = 'O';
+                dish[row][j] = '.';
+                i--;
+                j--;
+                continue;
+            }
+            if (dish[row][j] == '#') {
+                j--;
+                i = j;
+            }
+        }
+    }
+
+    private static void print(char[][] dish) {
+        for (char[] rows : dish) {
+            for (char cell : rows) {
+                System.out.print(cell);
+            }
+            System.out.println();
+        }
+        System.out.println();
     }
 }
