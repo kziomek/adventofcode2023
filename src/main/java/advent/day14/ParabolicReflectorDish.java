@@ -1,6 +1,8 @@
 package advent.day14;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ParabolicReflectorDish {
 
@@ -8,18 +10,42 @@ public class ParabolicReflectorDish {
     // 1000th elem is 103861
     // 1000 + 71428500 * 14 = 1000000000
     public static void main(String[] args) throws IOException {
-//        char[][] dish = Parser.parse("src/main/resources/day14/example.txt");
-                        char[][] dish = Parser.parse("src/main/resources/day14/my-input.txt");
+        //        char[][] dish = Parser.parse("src/main/resources/day14/example.txt");
+        char[][] dish = Parser.parse("src/main/resources/day14/my-input.txt");
 
-        for (int i = 1; i <= 1000; i++) {
+        Map<String, Integer> seenMap = new HashMap<>();
+        Map<Integer, Integer> weightMap = new HashMap<>();
+
+        for (int i = 1; i <= 1000000000; i++) {
             tiltToNorth(dish);
             tiltToWest(dish);
             tiltToSouth(dish);
             tiltToEast(dish);
             //            print(dish);
             int weight = calculateWeight(dish);
-            System.out.println(i + " " + weight);
+            System.out.println(weight);
+
+            String dishKey = calculateKey(dish);
+            if (seenMap.containsKey(dishKey)) {
+                int seenIdx = seenMap.get(dishKey);
+                int ridx = seenIdx + (1000000000 - seenIdx) % (i - seenIdx);
+                System.out.println("1000000000th weight " + weightMap.get(ridx));
+                break;
+            } else {
+                seenMap.put(dishKey, i);
+                weightMap.put(i, weight);
+            }
         }
+    }
+
+    private static String calculateKey(char[][] dish) {
+        StringBuilder sb = new StringBuilder();
+        for (char[] rows : dish) {
+            for (char cell : rows) {
+                sb.append(cell);
+            }
+        }
+        return sb.toString();
     }
 
     private static int calculateWeight(char[][] dish) {
