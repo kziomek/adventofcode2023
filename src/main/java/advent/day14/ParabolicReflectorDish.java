@@ -1,8 +1,10 @@
 package advent.day14;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ParabolicReflectorDish {
 
@@ -39,13 +41,9 @@ public class ParabolicReflectorDish {
     }
 
     private static String calculateKey(char[][] dish) {
-        StringBuilder sb = new StringBuilder();
-        for (char[] rows : dish) {
-            for (char cell : rows) {
-                sb.append(cell);
-            }
-        }
-        return sb.toString();
+        return Arrays.stream(dish)
+            .map(String::new)
+            .collect(Collectors.joining());
     }
 
     private static int calculateWeight(char[][] dish) {
