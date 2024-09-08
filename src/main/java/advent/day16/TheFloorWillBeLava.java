@@ -9,21 +9,66 @@ import java.util.Queue;
 public class TheFloorWillBeLava {
 
     public static void main(String[] args) throws IOException {
-//        String input = "src/main/resources/day16/example.txt";
+        //        String input = "src/main/resources/day16/example.txt";
         String input = "src/main/resources/day16/my-input.txt";
 
-        Pos[][] contraption = Files.readAllLines(Path.of(input))
+        Pos[][] contraption = loadContraption(input);
+
+        int maxCount = 0;
+        for (int i = 0; i < contraption.length; i++) {
+            reset(contraption);
+            Beam initBeam = new Beam('>', i, 0);
+            int count = countEnergisedTiles(initBeam, contraption);
+            maxCount = Math.max(count, maxCount);
+        }
+
+        for (int j = 0; j < contraption[0].length; j++) {
+            reset(contraption);
+            Beam initBeam = new Beam('v', 0, j);
+            int count = countEnergisedTiles(initBeam, contraption);
+            maxCount = Math.max(count, maxCount);
+        }
+
+        for (int i = 0; i < contraption.length; i++) {
+            reset(contraption);
+            Beam initBeam = new Beam('<', i, contraption[0].length);
+            int count = countEnergisedTiles(initBeam, contraption);
+            maxCount = Math.max(count, maxCount);
+        }
+
+        for (int j = 0; j < contraption[0].length; j++) {
+            reset(contraption);
+            Beam initBeam = new Beam('^', contraption.length, j);
+            int count = countEnergisedTiles(initBeam, contraption);
+            maxCount = Math.max(count, maxCount);
+        }
+
+        System.out.println("Max energised: " + maxCount);
+        //        countEnergisedTiles(initBeam, contraption);
+    }
+
+    private static void reset(Pos[][] contraption) {
+        for (Pos[] posRows : contraption) {
+            for (Pos pos : posRows) {
+                pos.reset();
+            }
+        }
+    }
+
+    private static Pos[][] loadContraption(String input) throws IOException {
+        return Files.readAllLines(Path.of(input))
             .stream().map(line -> line.chars().mapToObj(c -> new Pos((char) c)).toArray(Pos[]::new))
             .toArray(Pos[][]::new);
+    }
 
-        Beam initBeam = new Beam('>', 0, 0);
-
+    private static int countEnergisedTiles(Beam initBeam, Pos[][] contraption) {
         Queue<Beam> beamQueue = new LinkedList<>();
         beamQueue.add(initBeam);
 
         traverse(contraption, beamQueue);
         int count = countSeen(contraption);
         System.out.println(count);
+        return count;
     }
 
     private static int countSeen(Pos[][] contraption) {

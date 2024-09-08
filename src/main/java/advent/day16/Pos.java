@@ -28,4 +28,8 @@ public class Pos {
     public boolean seenAny() {
         return !seenDirection.isEmpty();
     }
+
+    public void reset() {
+        seenDirection.clear();
+    }
 }
