@@ -1,18 +1,16 @@
 package advent.day17;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 public class CityBlock {
+    Set<DirectionBlock> directionBlockSet = new HashSet<>();
 
-    private int i, j;
+    private final int i, j;
 
-    private int value;
-    private int totalCost;
-    private CityBlock prev;
-    private boolean seen = false;
-    private char fromDirection = '.';
+    private final int value;
 
     Map<Character, CityBlock> edges = new HashMap<>();
 
@@ -20,28 +18,10 @@ public class CityBlock {
         this.i = i;
         this.j = j;
         this.value = value;
-//        this.totalCost = Integer.MAX_VALUE;
-        this.totalCost = 999;
-    }
-
-    public String getKey() {
-        return i + "_" + j;
     }
 
     public int getValue() {
         return value;
-    }
-
-    public int getTotalCost() {
-        return totalCost;
-    }
-
-    public CityBlock getPrev() {
-        return prev;
-    }
-
-    public void setTotalCost(int totalCost) {
-        this.totalCost = totalCost;
     }
 
     public void addEdge(Character direction, CityBlock targetBlock) {
@@ -52,18 +32,6 @@ public class CityBlock {
         return edges;
     }
 
-    public void updateTotalCost(int sourceValue) {
-        totalCost = sourceValue;
-    }
-
-    public void setSeen() {
-        this.seen = true;
-    }
-
-    public boolean isSeen() {
-        return seen;
-    }
-
     public int getI() {
         return i;
     }
@@ -71,17 +39,4 @@ public class CityBlock {
     public int getJ() {
         return j;
     }
-
-    public void setPrev(CityBlock block) {
-        prev = block;
-    }
-
-    public void setFromDirection(char fromDirection) {
-        this.fromDirection = fromDirection;
-    }
-
-    public char getFromDirection() {
-        return fromDirection;
-    }
-
 }
