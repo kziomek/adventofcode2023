@@ -14,9 +14,10 @@ public class ClumsyCubicle {
         int res = 2 + 4 + 1 + 1 + 5 + 4 + 5 + 3 + 2 + 3 + 1 + 3 + 5 + 4 + 2 + 4 + 5 + 3 + 5 + 6 + 5 + 3 + 7 + 3 + 3 + 6 + 3 + 3 + 3;
         System.out.println(res);
 
-        CityBlock[][] blocks = Parser.parse("src/main/resources/day17/example.txt");
+//        CityBlock[][] blocks = Parser.parse("src/main/resources/day17/example.txt");
+//        CityBlock[][] blocks = Parser.parse("src/main/resources/day17/unfortunate-route.txt");
         //        CityBlock[][] blocks = Parser.parse("src/main/resources/day17/example-short.txt");
-        //        CityBlock[][] blocks = Parser.parse("src/main/resources/day17/my-input.txt");
+                CityBlock[][] blocks = Parser.parse("src/main/resources/day17/my-input.txt");
         buildGraph(blocks);
 
         PriorityQueue<DirectionBlock> queue = new PriorityQueue<>(Comparator.comparingInt(DirectionBlock::getTotalCost));
@@ -63,7 +64,7 @@ public class ClumsyCubicle {
     }
 
     private static void printBestResult(CityBlock[][] blocks) {
-        DirectionBlock result = blocks[blocks.length - 1][blocks[0].length - 1].directionBlockSet.stream().min(Comparator.comparingInt(DirectionBlock::getTotalCost)).get();
+        DirectionBlock result = blocks[blocks.length - 1][blocks[0].length - 1].directionBlockSet.stream().filter(db -> db.getStraightCounter() >= 4).min(Comparator.comparingInt(DirectionBlock::getTotalCost)).get();
         System.out.println("Best route " + result.getTotalCost());
     }
 
@@ -77,7 +78,9 @@ public class ClumsyCubicle {
         return block.getOriginal().getEdges().entrySet() //
             .stream()
             .filter(e -> e.getKey() != reversedDirection)
-            .filter(e -> e.getKey() != block.getEntryDirection() || e.getKey() == block.getEntryDirection() && straightCount < 3)
+            .filter(e ->  block.getEntryDirection() == '.'
+                || (e.getKey() != block.getEntryDirection() && straightCount >= 4)
+                || (e.getKey() == block.getEntryDirection() && straightCount < 10))
             .map(e -> new DirectionBlock(e.getValue(), e.getKey(), e.getKey() == block.getEntryDirection() ? straightCount + 1 : 1))
             .collect(Collectors.toList()); // Here we get access to target blocks
     }
