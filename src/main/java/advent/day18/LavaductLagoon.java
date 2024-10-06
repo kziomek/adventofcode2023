@@ -9,10 +9,24 @@ import java.util.Set;
 
 public class LavaductLagoon {
 
+    // part 2
+    // 1 collect lines
+    // collect areas from lines
+    // calculate total area of squares
     public static void main(String[] args) throws IOException {
 
-        List<Step> steps = Parser.parse("src/main/resources/day18/example.txt");
+//        List<Step> steps = Parser.parse("src/main/resources/day18/example.txt");
+        List<Step> steps = Parser.parse("src/main/resources/day18/example22.txt");
 //                                List<Step> steps = Parser.parse("src/main/resources/day18/my-input.txt");
+
+
+        int area = SweepLineAlgorithm.calculateArea(steps);
+        System.out.println("Area: " + area);
+
+        part1(steps);
+    }
+
+    private static void part1(List<Step> steps) {
         char[][] lagoon = buildLagoon(steps);
         digLagoon(steps, lagoon);
         print(lagoon);
