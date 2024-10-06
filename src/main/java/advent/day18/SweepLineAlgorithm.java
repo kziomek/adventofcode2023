@@ -36,9 +36,7 @@ public class SweepLineAlgorithm {
             area += sweptArea;
 
             List<Line> currentLines = linesMap.get(x);
-
-            sweepingLines = updateX(sweepingLines, x);
-            List<Line> newSeepingLines = LineUtils.merge(sweepingLines, currentLines);
+            List<Line> newSeepingLines = LineUtils.merge(updateX(sweepingLines, x), currentLines, x);
 
             long sweepingDifferenceArea = sweepingDifferenceArea(sweepingLines, newSeepingLines);
             System.out.println("sweepingDifferenceArea " + sweepingDifferenceArea);
@@ -50,12 +48,12 @@ public class SweepLineAlgorithm {
         return area;
     }
 
-    private static List<Line> updateX(List<Line> sweepingLines, Long x) {
-        List<Line> updatedLines = new ArrayList<>();
-        for (Line line : sweepingLines) {
-            updatedLines.add(new Line(x, line.a, line.b));
+    private static List<Line> updateX(List<Line> sweeps, Long x) {
+        List<Line> mergedLines = new ArrayList<>();
+        for (Line sweep : sweeps) {
+            mergedLines.add(new Line(x, sweep.a, sweep.b));
         }
-        return updatedLines;
+        return mergedLines;
     }
 
     private static long sweepingDifferenceArea(List<Line> sweepingLines, List<Line> newSeepingLines) {
