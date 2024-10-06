@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 
 public class Parser {
 
-    public static List<Step> parse(String path) throws IOException {
+    public static List<Step> parse(String path, boolean isPart2) throws IOException {
         return Files.readAllLines(Path.of(path)).stream()
             .map(line -> line.split(" "))
-            .map(l -> new Step(l[0].toCharArray()[0], l[1], l[2]))
+            .map(l -> new Step(l[0].toCharArray()[0], l[1], l[2], isPart2))
             .collect(Collectors.toList());
     }
 }
