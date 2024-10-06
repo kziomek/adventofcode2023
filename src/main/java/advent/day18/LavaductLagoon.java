@@ -9,11 +9,14 @@ public class LavaductLagoon {
 
         boolean isPart2 = true;
 
-        List<Step> steps = Parser.parse("src/main/resources/day18/example.txt", isPart2);
-//                                        List<Step> steps = Parser.parse("src/main/resources/day18/my-input.txt", isPart2);
+//        List<Step> steps = Parser.parse("src/main/resources/day18/example.txt", isPart2);
+                                        List<Step> steps = Parser.parse("src/main/resources/day18/my-input.txt", isPart2);
 
         long area = SweepLineAlgorithm.calculateArea(steps);
         System.out.println("Area: " + area);
+
+        long pickTheoremArea = PickAndShoelaceTheorem.calculateArea(steps);
+        System.out.println("Area: " + pickTheoremArea);
 
 //        long areaFromGraph = GraphAlgorithm.calculateArea(steps);
 //        System.out.println("Area from graph alg: " + areaFromGraph);
