@@ -3,9 +3,9 @@ package advent.day18;
 import java.util.Objects;
 
 public class Line {
-    int x, a, b;
+    long x, a, b;
 
-    public Line(int x, int a, int b) {
+    public Line(long x, long a, long b) {
         this.x = x;
         this.a = a;
         this.b = b;

@@ -10,12 +10,12 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class SweepLineAlgorithm {
-    public static int calculateArea(List<Step> steps) {
+    public static long calculateArea(List<Step> steps) {
 
         List<Line> lines = collectLines(steps);
-        lines.sort(Comparator.comparingInt(line -> line.x));
+        lines.sort(Comparator.comparingLong(line -> line.x));
 
-        Map<Integer, List<Line>> linesMap = new HashMap<>();
+        Map<Long, List<Line>> linesMap = new HashMap<>();
         for (Line line : lines) {
             if (!linesMap.containsKey(line.x)) {
                 linesMap.put(line.x, new ArrayList<>());
@@ -24,20 +24,20 @@ public class SweepLineAlgorithm {
         }
         System.out.println(linesMap);
 
-        int area = 0;
+        long area = 0;
         List<Line> sweepingLines = new ArrayList<>();
-        for (Integer x : linesMap.keySet().stream().sorted().toList()) {
+        for (Long x : linesMap.keySet().stream().sorted().toList()) {
             System.out.println("x " + x);
             System.out.println("sweepingLines " + sweepingLines);
 
-            int sweptArea = sweptArea(x, sweepingLines);
+            long sweptArea = sweptArea(x, sweepingLines);
             System.out.println("swept area: " + sweptArea);
             area += sweptArea;
 
             List<Line> currentLines = linesMap.get(x);
 
             List<Line> newSeepingLines = merge(sweepingLines, currentLines, x);
-            int sweepingDifferenceArea = sweepingDifferenceArea(sweepingLines, newSeepingLines);
+            long sweepingDifferenceArea = sweepingDifferenceArea(sweepingLines, newSeepingLines);
             System.out.println("sweepingDifferenceArea " + sweepingDifferenceArea);
             area += sweepingDifferenceArea;
             sweepingLines = newSeepingLines;
@@ -64,7 +64,7 @@ public class SweepLineAlgorithm {
         return area;
     }
 
-    private static int sweepingDifferenceArea(List<Line> sweepingLines, List<Line> newSeepingLines) {
+    private static long sweepingDifferenceArea(List<Line> sweepingLines, List<Line> newSeepingLines) {
 
         List<Line> remainingLines = subtractLines(sweepingLines, newSeepingLines);
 
@@ -155,8 +155,8 @@ public class SweepLineAlgorithm {
         return remainingLines;
     }
 
-    private static int countTotalLength(List<Line> remain) {
-        int total = 0;
+    private static long countTotalLength(List<Line> remain) {
+        long total = 0;
         for (Line line : remain) {
             total += line.b - line.a + 1;
         }
@@ -171,7 +171,7 @@ public class SweepLineAlgorithm {
             || newSeepingLine.b >= sweepingLine.a && newSeepingLine.b <= sweepingLine.b;
     }
 
-    private static List<Line> merge(List<Line> sweeps, List<Line> currentLines, int x) {
+    private static List<Line> merge(List<Line> sweeps, List<Line> currentLines, long x) {
         System.out.println("\nMerge at x = " + x);
         System.out.println("sweeps " + sweeps);
         System.out.println("currentLines " + currentLines);
@@ -225,7 +225,7 @@ public class SweepLineAlgorithm {
             return mergedLines;
         }
 
-        PriorityQueue<Line> queue = new PriorityQueue<>(Comparator.comparingInt(line -> line.a));
+        PriorityQueue<Line> queue = new PriorityQueue<>(Comparator.comparingLong(line -> line.a));
         queue.addAll(mergedLines);
 
         List<Line> joinedLines = new ArrayList<>();
@@ -264,8 +264,8 @@ public class SweepLineAlgorithm {
         return null;
     }
 
-    private static int sweptArea(Integer x, List<Line> sweeps) {
-        int area = 0;
+    private static long sweptArea(Long x, List<Line> sweeps) {
+        long area = 0;
         for (Line sweep : sweeps) {
             area += (sweep.b - sweep.a + 1) * (x - sweep.x);
         }
@@ -279,8 +279,8 @@ public class SweepLineAlgorithm {
     }
 
     private static List<Line> collectLines(List<Step> steps) {
-        int x = 0;
-        int y = 0;
+        long x = 0;
+        long y = 0;
         List<Line> lines = new ArrayList<>();
 
         for (Step step : steps) {

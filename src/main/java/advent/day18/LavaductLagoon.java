@@ -20,10 +20,9 @@ public class LavaductLagoon {
                                 List<Step> steps = Parser.parse("src/main/resources/day18/my-input.txt");
 
 
-        int area = SweepLineAlgorithm.calculateArea(steps);
+        long area = SweepLineAlgorithm.calculateArea(steps);
         System.out.println("Area: " + area);
-
-        part1(steps);
+//        part1(steps);
     }
 
     private static void part1(List<Step> steps) {
