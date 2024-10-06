@@ -9,65 +9,6 @@ import java.util.Queue;
 
 public class LineUtils {
 
-    // TODO this method should be refactored and moved to LineUtils
-    public static List<Line> merge(List<Line> mergedLines, List<Line> currentLines, long x) {
-        System.out.println("\nMerge at x = " + x);
-        System.out.println("sweeps " + mergedLines);
-        System.out.println("currentLines " + currentLines);
-
-
-        for (Line currentLine : currentLines) {
-            Line overlappedLine = findOverlapped(currentLine, mergedLines);
-            if (overlappedLine != null) {
-                if (currentLine.a == overlappedLine.a && currentLine.b == overlappedLine.b) { // equals
-                    mergedLines.remove(overlappedLine);
-                } else if (currentLine.a > overlappedLine.a && currentLine.b < overlappedLine.b) { //  in
-                    mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.a));
-                    mergedLines.add(new Line(overlappedLine.x, currentLine.b, overlappedLine.b));
-                } else if (currentLine.a == overlappedLine.a) { // reduce from a
-                    mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(overlappedLine.x, currentLine.b, overlappedLine.b));
-                } else if (currentLine.b == overlappedLine.b) { //reduce from b
-                    mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.a));
-                } else if (currentLine.b == overlappedLine.a) { //extend at up
-                    mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(overlappedLine.x, currentLine.a, overlappedLine.b));
-                } else if (currentLine.a == overlappedLine.b) { // extend at bottom
-                    mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.b));
-                }
-            } else {
-                mergedLines.add(currentLine);
-            }
-        }
-        System.out.println("mergedLines " + mergedLines);
-
-        mergedLines = LineUtils.joinAdjacent(mergedLines);
-        System.out.println("joined mergedLines " + mergedLines);
-        return mergedLines;
-
-        //join adjacent
-
-        //if overlap with sweep, split sweep
-        // if touches on one end and overlap -> reduce sweep
-        // if touches on one end and do not overlap -> add to sweep
-        // if not overlap add line to sweeps
-    }
-
-    private static Line findOverlapped(Line currentLine, List<Line> mergedLines) {
-        for (Line mergedLine : mergedLines) {
-            if (currentLine.a >= mergedLine.a && currentLine.a <= mergedLine.b
-                || currentLine.b >= mergedLine.a && currentLine.b <= mergedLine.b
-            ) {
-                return mergedLine;
-            }
-        }
-        return null;
-    }
-
-
     public static List<Line> subtractLines(Line minuend, Line subtrahend) {
         if (!isOverlapping(minuend, subtrahend)) {
             return List.of(minuend);

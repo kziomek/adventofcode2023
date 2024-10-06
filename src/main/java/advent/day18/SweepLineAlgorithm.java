@@ -3,11 +3,8 @@ package advent.day18;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 public class SweepLineAlgorithm {
 
@@ -36,7 +33,7 @@ public class SweepLineAlgorithm {
             area += sweptArea;
 
             List<Line> currentLines = linesMap.get(x);
-            List<Line> newSeepingLines = LineUtils.merge(updateX(sweepingLines, x), currentLines, x);
+            List<Line> newSeepingLines = mergeSweepLinesWithNextLines(updateX(sweepingLines, x), currentLines);
 
             long sweepingDifferenceArea = sweepingDifferenceArea(sweepingLines, newSeepingLines);
             System.out.println("sweepingDifferenceArea " + sweepingDifferenceArea);
@@ -111,5 +108,51 @@ public class SweepLineAlgorithm {
         }
 
         return lines;
+    }
+
+    // This method is algorithm specific and needs to "switch off" line when it's met second time, meaning it's closing area
+    public static List<Line> mergeSweepLinesWithNextLines(List<Line> sweepLines, List<Line> currentLines) {
+        for (Line currentLine : currentLines) {
+            Line overlappedLine = findOverlapped(currentLine, sweepLines);
+            if (overlappedLine == null) {
+                sweepLines.add(currentLine); //fully opening line
+            } else {
+                if (currentLine.a == overlappedLine.a && currentLine.b == overlappedLine.b) { // equals
+                    sweepLines.remove(overlappedLine); // closing line
+                } else if (currentLine.a > overlappedLine.a && currentLine.b < overlappedLine.b) { //  closing in
+                    sweepLines.remove(overlappedLine);
+                    sweepLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.a));
+                    sweepLines.add(new Line(overlappedLine.x, currentLine.b, overlappedLine.b));
+                } else if (currentLine.a == overlappedLine.a) { // reduce from a
+                    sweepLines.remove(overlappedLine);
+                    sweepLines.add(new Line(overlappedLine.x, currentLine.b, overlappedLine.b));
+                } else if (currentLine.b == overlappedLine.b) { //reduce from b
+                    sweepLines.remove(overlappedLine);
+                    sweepLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.a));
+                } else if (currentLine.b == overlappedLine.a) { //extend at up
+                    sweepLines.remove(overlappedLine);
+                    sweepLines.add(new Line(overlappedLine.x, currentLine.a, overlappedLine.b));
+                } else if (currentLine.a == overlappedLine.b) { // extend at bottom
+                    sweepLines.remove(overlappedLine);
+                    sweepLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.b));
+                }
+            }
+        }
+        System.out.println("sweepLines " + sweepLines);
+
+        sweepLines = LineUtils.joinAdjacent(sweepLines);
+        System.out.println("joined sweepLines " + sweepLines);
+        return sweepLines;
+    }
+
+    private static Line findOverlapped(Line currentLine, List<Line> mergedLines) {
+        for (Line mergedLine : mergedLines) {
+            if (currentLine.a >= mergedLine.a && currentLine.a <= mergedLine.b
+                || currentLine.b >= mergedLine.a && currentLine.b <= mergedLine.b
+            ) {
+                return mergedLine;
+            }
+        }
+        return null;
     }
 }
