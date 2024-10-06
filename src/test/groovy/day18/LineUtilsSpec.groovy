@@ -54,4 +54,17 @@ class LineUtilsSpec extends Specification {
 
     }
 
+    def "merge lines"() {
+        when:
+        def result = LineUtils.merge(linesA, linesB)
+        then:
+        result == expectedResult
+        where:
+        linesA              | linesB              | expectedResult      | description
+        [new Line(0, 1, 2)] | [new Line(0, 1, 2)] | []                  | "This is closing line"
+        []                  | [new Line(0, 1, 2)] | [new Line(0, 1, 2)] | "This is closing opening line"
+
+
+    }
+
 }
