@@ -9,13 +9,35 @@ import spock.lang.Specification
 class SweepingAlgorithmSpec extends Specification {
 
     def "subtract lines"() {
-        given:
-        Line minuend = new Line(new Point(0, 1), new Point(0, 2))
-        Line subtrahend = new Line(new Point(0, 3), new Point(0, 4))
         when:
-        Line difference = SweepLineAlgorithm.subtractLines(minuend, subtrahend)
+        List<Line> difference = SweepLineAlgorithm.subtractLines(minuend, subtrahend)
         then:
-        difference == new Line(new Point(0, 1), new Point(0, 2))
+        difference == expectedDifference
+        where:
+        minuend           | subtrahend        | expectedDifference
+        new Line(0, 1, 2) | new Line(0, 3, 4) | [new Line(0, 1, 2)]
+        new Line(0, 3, 4) | new Line(0, 1, 2) | [new Line(0, 3, 4)]
+        new Line(0, 1, 3) | new Line(0, 3, 4) | [new Line(0, 1, 2)]
+        new Line(0, 1, 4) | new Line(0, 3, 6) | [new Line(0, 1, 2)]
+
+        new Line(0, 3, 6) | new Line(0, 1, 4) | [new Line(0, 5, 6)]
+        new Line(0, 4, 6) | new Line(0, 1, 4) | [new Line(0, 5, 6)]
+
+        new Line(0, 1, 2) | new Line(0, 1, 2) | []
+        new Line(0, 2, 3) | new Line(0, 1, 4) | []
+        new Line(0, 1, 6) | new Line(0, 2, 4) | [new Line(0, 1, 1), new Line(0, 5, 6)]
+    }
+
+    def "subtract multiple lines"() {
+        when:
+        List<Line> difference = SweepLineAlgorithm.subtractLines(minuends, subtrahends)
+        then:
+        difference == expectedDifference
+        where:
+        minuends            | subtrahends                            | expectedDifference
+        [new Line(0, 1, 5), new Line(0, 7, 9)] | [new Line(0, 2, 3), new Line(0, 8, 8)] | [new Line(0, 1, 1), new Line(0, 4, 5), new Line(0, 7, 7), new Line(0, 9, 9)]
+        [new Line(0, 1, 9)] | [new Line(0, 2, 3), new Line(0, 8, 8)] | [new Line(0, 1, 1), new Line(0, 4, 7), new Line(0, 9, 9)]
+        [new Line(0, 2, 5)] | [new Line(0, 1, 2), new Line(0, 4, 5)] | [new Line(0, 3, 3)]
     }
 
 

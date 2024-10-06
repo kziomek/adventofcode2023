@@ -16,8 +16,8 @@ public class LavaductLagoon {
     public static void main(String[] args) throws IOException {
 
 //        List<Step> steps = Parser.parse("src/main/resources/day18/example.txt");
-        List<Step> steps = Parser.parse("src/main/resources/day18/example22.txt");
-//                                List<Step> steps = Parser.parse("src/main/resources/day18/my-input.txt");
+//        List<Step> steps = Parser.parse("src/main/resources/day18/example.txt");
+                                List<Step> steps = Parser.parse("src/main/resources/day18/my-input.txt");
 
 
         int area = SweepLineAlgorithm.calculateArea(steps);

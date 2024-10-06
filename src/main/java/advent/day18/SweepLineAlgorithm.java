@@ -7,19 +7,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class SweepLineAlgorithm {
     public static int calculateArea(List<Step> steps) {
 
         List<Line> lines = collectLines(steps);
-        lines.sort(Comparator.comparingInt(line -> line.a.x));
+        lines.sort(Comparator.comparingInt(line -> line.x));
 
         Map<Integer, List<Line>> linesMap = new HashMap<>();
         for (Line line : lines) {
-            if (!linesMap.containsKey(line.a.x)) {
-                linesMap.put(line.a.x, new ArrayList<>());
+            if (!linesMap.containsKey(line.x)) {
+                linesMap.put(line.x, new ArrayList<>());
             }
-            linesMap.get(line.a.x).add(line);
+            linesMap.get(line.x).add(line);
         }
         System.out.println(linesMap);
 
@@ -64,75 +65,110 @@ public class SweepLineAlgorithm {
     }
 
     private static int sweepingDifferenceArea(List<Line> sweepingLines, List<Line> newSeepingLines) {
-        subtractLines(sweepingLines, newSeepingLines);
+
+        List<Line> remainingLines = subtractLines(sweepingLines, newSeepingLines);
 
         System.out.println("\nCalculate Reduction Difference");
         System.out.println(sweepingLines);
         System.out.println(newSeepingLines);
 
-        //todo FIX ME x=7 - reimplement this method
-        // sweeping line can be cat into smaller lines. All cutted lines must be processed before producing remingin
+        return countTotalLength(remainingLines);
 
-        List<Line> remain = new ArrayList<>();
-        for (Line sweepingLine : sweepingLines) {
 
-            int ay = sweepingLine.a.y;
-            int by = sweepingLine.b.y;
-            for (Line newSeepingLine : newSeepingLines) {
-
-                if (!isOverlapping(sweepingLine, newSeepingLine)) {
-                    continue;
-                } else if (sweepingLine.a.y == newSeepingLine.a.y && newSeepingLine.b.y < sweepingLine.b.y) { // was reduction
-                    ay = newSeepingLine.b.y + 1;
-                } else if (sweepingLine.b.y == newSeepingLine.b.y && newSeepingLine.a.y > sweepingLine.a.y) { //was reduction
-                    by = newSeepingLine.a.y - 1;
-                } else if (sweepingLine.a.y < newSeepingLine.a.y && sweepingLine.b.y >= newSeepingLine.a.y &&  sweepingLine.b.y < newSeepingLine.b.y ) { //overlaping reduction down
-                    by = newSeepingLine.a.y - 1;
-                } else if (sweepingLine.b.y > newSeepingLine.b.y && sweepingLine.a.y <= newSeepingLine.b.y && sweepingLine.a.y > newSeepingLine.a.y) { //overlaping reduction up
-                    ay = newSeepingLine.b.y + 1;
-                } else { //overlaping
-
-                    if (sweepingLine.a.y < newSeepingLine.a.y && sweepingLine.b.y > newSeepingLine.b.y) {
-                        remain.add(new Line(new Point(sweepingLine.a.x, sweepingLine.a.y), new Point(sweepingLine.a.x, newSeepingLine.a.y - 1)));
-                        remain.add(new Line(new Point(sweepingLine.a.x, newSeepingLine.b.y + 1), new Point(sweepingLine.a.x, sweepingLine.b.y)));
-                    }
-                    ay = 2;
-                    by = 1;
-                }
-            }
-
-            if (ay <= by) {
-                remain.add(new Line(new Point(sweepingLine.a.x, ay), new Point(sweepingLine.a.x, by)));
-            }
-        }
-
-        System.out.println("Reduced line ");
-        System.out.println(remain);
-        return countTotalLength(remain);
+//
+//        //todo FIX ME x=7 - reimplement this method
+//        // sweeping line can be cat into smaller lines. All cutted lines must be processed before producing remingin
+//
+//        List<Line> remain = new ArrayList<>();
+//        for (Line sweepingLine : sweepingLines) {
+//
+//            int ay = sweepingLine.a;
+//            int by = sweepingLine.b;
+//            for (Line newSeepingLine : newSeepingLines) {
+//
+//                if (!isOverlapping(sweepingLine, newSeepingLine)) {
+//                    continue;
+//                } else if (sweepingLine.a == newSeepingLine.a && newSeepingLine.b < sweepingLine.b) { // was reduction
+//                    ay = newSeepingLine.b + 1;
+//                } else if (sweepingLine.b == newSeepingLine.b && newSeepingLine.a > sweepingLine.a) { //was reduction
+//                    by = newSeepingLine.a - 1;
+//                } else if (sweepingLine.a < newSeepingLine.a && sweepingLine.b >= newSeepingLine.a && sweepingLine.b < newSeepingLine.b) { //overlaping reduction down
+//                    by = newSeepingLine.a - 1;
+//                } else if (sweepingLine.b > newSeepingLine.b && sweepingLine.a <= newSeepingLine.b && sweepingLine.a > newSeepingLine.a) { //overlaping reduction up
+//                    ay = newSeepingLine.b + 1;
+//                } else { //overlaping
+//
+//                    if (sweepingLine.a < newSeepingLine.a && sweepingLine.b > newSeepingLine.b) {
+//                        remain.add(new Line(sweepingLine.x, sweepingLine.a, newSeepingLine.a - 1));
+//                        remain.add(new Line(sweepingLine.x, newSeepingLine.b + 1, sweepingLine.b));
+//                    }
+//                    ay = 2;
+//                    by = 1;
+//                }
+//            }
+//
+//            if (ay <= by) {
+//                remain.add(new Line(sweepingLine.x, ay, by));
+//            }
+//        }
+//
+//        System.out.println("Reduced line ");
+//        System.out.println(remain);
+//        return countTotalLength(remain);
     }
 
     public static List<Line> subtractLines(Line minuend, Line subtrahend) {
-        return null;
+        if (!isOverlapping(minuend, subtrahend)) {
+            return List.of(minuend);
+        }
+        // minuend longer than subtrahend on both ends will be cut in the middle into two lines
+        if (minuend.a < subtrahend.a && minuend.b > subtrahend.b) {
+            return List.of(new Line(minuend.x, minuend.a, subtrahend.a - 1), new Line(minuend.x, subtrahend.b + 1, minuend.b));
+        }
+        // minuend completely covered by subtrahend
+        if (minuend.a >= subtrahend.a && minuend.b <= subtrahend.b) {
+            return List.of();
+        }
+        // minuend protruding on left end
+        if (minuend.b >= subtrahend.a && minuend.b <= subtrahend.b) {
+            return List.of(new Line(minuend.x, minuend.a, subtrahend.a - 1));
+        }
+
+        // minuend protruding on right end
+        if (minuend.a >= subtrahend.a && minuend.a <= subtrahend.b) {
+            return List.of(new Line(minuend.x, subtrahend.b + 1, minuend.b));
+        }
+        throw new IllegalStateException("should not be here");
     }
 
-    public static List<Line> subtractLines(List<Line> minuend, List<Line> subtrahend) {
-        return new ArrayList<>();
+    public static List<Line> subtractLines(List<Line> minuends, List<Line> subtrahends) {
+        List<Line> remainingLines = new ArrayList<>(minuends);
+        for (Line subtrahend : subtrahends) {
+            Queue<Line> queue = new LinkedList<>(remainingLines);
+            remainingLines.clear();
+
+            while (!queue.isEmpty()) {
+                List<Line> subtractedLines = subtractLines(queue.poll(), subtrahend);
+                remainingLines.addAll(subtractedLines);
+            }
+        }
+        return remainingLines;
     }
 
     private static int countTotalLength(List<Line> remain) {
         int total = 0;
         for (Line line : remain) {
-            total += line.b.y - line.a.y + 1;
+            total += line.b - line.a + 1;
         }
 
         return total;
     }
 
     private static boolean isOverlapping(Line sweepingLine, Line newSeepingLine) {
-        return sweepingLine.a.y >= newSeepingLine.a.y && sweepingLine.a.y <= newSeepingLine.b.y
-            || sweepingLine.b.y >= newSeepingLine.a.y && sweepingLine.b.y <= newSeepingLine.b.y
-            || newSeepingLine.a.y >= sweepingLine.a.y && newSeepingLine.a.y <= sweepingLine.b.y
-            || newSeepingLine.b.y >= sweepingLine.a.y && newSeepingLine.b.y <= sweepingLine.b.y;
+        return sweepingLine.a >= newSeepingLine.a && sweepingLine.a <= newSeepingLine.b
+            || sweepingLine.b >= newSeepingLine.a && sweepingLine.b <= newSeepingLine.b
+            || newSeepingLine.a >= sweepingLine.a && newSeepingLine.a <= sweepingLine.b
+            || newSeepingLine.b >= sweepingLine.a && newSeepingLine.b <= sweepingLine.b;
     }
 
     private static List<Line> merge(List<Line> sweeps, List<Line> currentLines, int x) {
@@ -142,29 +178,29 @@ public class SweepLineAlgorithm {
 
         List<Line> mergedLines = new ArrayList<>();
         for (Line sweep : sweeps) {
-            mergedLines.add(new Line(new Point(x, sweep.a.y), new Point(x, sweep.b.y)));
+            mergedLines.add(new Line(x, sweep.a, sweep.b));
         }
         for (Line currentLine : currentLines) {
             Line overlappedLine = findOverlapped(currentLine, mergedLines);
             if (overlappedLine != null) {
-                if (currentLine.a.y == overlappedLine.a.y && currentLine.b.y == overlappedLine.b.y) { // equals
+                if (currentLine.a == overlappedLine.a && currentLine.b == overlappedLine.b) { // equals
                     mergedLines.remove(overlappedLine);
-                } else if (currentLine.a.y > overlappedLine.a.y && currentLine.b.y < overlappedLine.b.y) { //  in
+                } else if (currentLine.a > overlappedLine.a && currentLine.b < overlappedLine.b) { //  in
                     mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(new Point(overlappedLine.a.x, overlappedLine.a.y), new Point(overlappedLine.a.x, currentLine.a.y)));
-                    mergedLines.add(new Line(new Point(overlappedLine.a.x, currentLine.b.y), new Point(overlappedLine.a.x, overlappedLine.b.y)));
-                } else if (currentLine.a.y == overlappedLine.a.y) { // reduce from a
+                    mergedLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.a));
+                    mergedLines.add(new Line(overlappedLine.x, currentLine.b, overlappedLine.b));
+                } else if (currentLine.a == overlappedLine.a) { // reduce from a
                     mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(new Point(overlappedLine.a.x, currentLine.b.y), new Point(overlappedLine.a.x, overlappedLine.b.y)));
-                } else if (currentLine.b.y == overlappedLine.b.y) { //reduce from b
+                    mergedLines.add(new Line(overlappedLine.x, currentLine.b, overlappedLine.b));
+                } else if (currentLine.b == overlappedLine.b) { //reduce from b
                     mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(new Point(overlappedLine.a.x, overlappedLine.a.y), new Point(overlappedLine.a.x, currentLine.a.y)));
-                } else if (currentLine.b.y == overlappedLine.a.y) { //extend at up
+                    mergedLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.a));
+                } else if (currentLine.b == overlappedLine.a) { //extend at up
                     mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(new Point(overlappedLine.a.x, currentLine.a.y), new Point(overlappedLine.a.x, overlappedLine.b.y)));
-                } else if (currentLine.a.y == overlappedLine.b.y) { // extend at bottom
+                    mergedLines.add(new Line(overlappedLine.x, currentLine.a, overlappedLine.b));
+                } else if (currentLine.a == overlappedLine.b) { // extend at bottom
                     mergedLines.remove(overlappedLine);
-                    mergedLines.add(new Line(new Point(overlappedLine.a.x, overlappedLine.a.y), new Point(overlappedLine.a.x, currentLine.b.y)));
+                    mergedLines.add(new Line(overlappedLine.x, overlappedLine.a, currentLine.b));
                 }
             } else {
                 mergedLines.add(currentLine);
@@ -189,7 +225,7 @@ public class SweepLineAlgorithm {
             return mergedLines;
         }
 
-        PriorityQueue<Line> queue = new PriorityQueue<>(Comparator.comparingInt(line -> line.a.y));
+        PriorityQueue<Line> queue = new PriorityQueue<>(Comparator.comparingInt(line -> line.a));
         queue.addAll(mergedLines);
 
         List<Line> joinedLines = new ArrayList<>();
@@ -204,8 +240,8 @@ public class SweepLineAlgorithm {
                 continue;
             }
             Line secondLine = queue.poll();
-            if (firstLine.b.y == secondLine.a.y) {
-                firstLine = new Line(new Point(firstLine.a.x, firstLine.a.y), new Point(firstLine.a.x, secondLine.b.y));
+            if (firstLine.b == secondLine.a) {
+                firstLine = new Line(firstLine.x, firstLine.a, secondLine.b);
             } else {
                 joinedLines.add(firstLine);
                 firstLine = secondLine;
@@ -219,8 +255,8 @@ public class SweepLineAlgorithm {
 
     private static Line findOverlapped(Line currentLine, List<Line> mergedLines) {
         for (Line mergedLine : mergedLines) {
-            if (currentLine.a.y >= mergedLine.a.y && currentLine.a.y <= mergedLine.b.y
-                || currentLine.b.y >= mergedLine.a.y && currentLine.b.y <= mergedLine.b.y
+            if (currentLine.a >= mergedLine.a && currentLine.a <= mergedLine.b
+                || currentLine.b >= mergedLine.a && currentLine.b <= mergedLine.b
             ) {
                 return mergedLine;
             }
@@ -231,7 +267,7 @@ public class SweepLineAlgorithm {
     private static int sweptArea(Integer x, List<Line> sweeps) {
         int area = 0;
         for (Line sweep : sweeps) {
-            area += (sweep.b.y - sweep.a.y + 1) * (x - sweep.a.x);
+            area += (sweep.b - sweep.a + 1) * (x - sweep.x);
         }
         return area;
     }
@@ -252,11 +288,11 @@ public class SweepLineAlgorithm {
                 case 'R' -> x += step.getLength();
                 case 'L' -> x -= step.getLength();
                 case 'D' -> {
-                    lines.add(new Line(new Point(x, y), new Point(x, y + step.getLength())));
+                    lines.add(new Line(x, y, y + step.getLength()));
                     y += step.getLength();
                 }
                 case 'U' -> {
-                    lines.add(new Line(new Point(x, y - step.getLength()), new Point(x, y)));
+                    lines.add(new Line(x, y - step.getLength(), y));
                     y -= step.getLength();
                 }
             }
