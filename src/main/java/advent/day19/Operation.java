@@ -33,4 +33,8 @@ public class Operation {
             ", targetWorkflow='" + targetWorkflow + '\'' +
             '}';
     }
+
+    public boolean isDummy() {
+        return oper == 'z';
+    }
 }

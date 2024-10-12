@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
+
 public class Aplenty {
 
     public static void main(String[] args) throws IOException {
-        //        List<String> lines = Files.readAllLines(Path.of("src/main/resources/day19/example.txt"));
-        List<String> lines = Files.readAllLines(Path.of("src/main/resources/day19/my-input.txt"));
+//        List<String> lines = Files.readAllLines(Path.of("src/main/resources/day19/example.txt"));
+                List<String> lines = Files.readAllLines(Path.of("src/main/resources/day19/my-input.txt"));
 
         List<Map<Character, Long>> parts = Parser.parseParts(lines);
         System.out.println("Parts: ");
@@ -21,11 +23,43 @@ public class Aplenty {
         System.out.println(workflows);
         System.out.println("Workflows: ");
 
-        long result = process(parts, workflows);
+        long result = processPart1(parts, workflows);
         System.out.println("Total result " + result);
+
+        Node aNode = Graph.buildGraph(workflows);
+        System.out.println("");
+
+        long total = 0;
+        for (Edge prev : aNode.prevs) {
+            Map<Character, Range> intersected = Graph.initRanges();
+            Edge current = prev;
+            do {
+                intersect(intersected, current.ranges);
+                if (!current.to.prevs.isEmpty()) {
+                    current = current.to.prevs.get(0);
+                } else {
+                    current = null;
+                }
+            } while (current != null);
+            System.out.println(intersected);
+            total += countIntersected(intersected);
+        }
+        System.out.println("Total " + total);
     }
 
-    private static long process(List<Map<Character, Long>> parts, Map<String, Workflow> workflows) {
+    private static long countIntersected(Map<Character, Range> intersected) {
+        return intersected.get('a').getRangeValue() * intersected.get('x').getRangeValue() * intersected.get('s').getRangeValue() * intersected.get('m').getRangeValue();
+    }
+
+    private static void intersect(Map<Character, Range> intersected, Map<Character, Range> ranges) {
+        for (Character c : intersected.keySet()) {
+            Range intersectedRange = intersected.get(c);
+            Range range = ranges.get(c);
+            intersectedRange.subtract(range);
+        }
+    }
+
+    private static long processPart1(List<Map<Character, Long>> parts, Map<String, Workflow> workflows) {
         System.out.println("Process: ");
 
         List<Map<Character, Long>> acceptedParts = new ArrayList<>();
