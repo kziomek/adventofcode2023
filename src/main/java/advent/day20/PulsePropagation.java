@@ -11,6 +11,10 @@ import java.util.stream.Collectors;
 
 public class PulsePropagation {
 
+    /**
+     * In part2 graphs are mostly independent. They join at &kl module, so we can calculate minimum number of pressing button for each of modules pulsing to &kl.
+     * Then we calculate GDC which is strait forward multiply of numbers in this case.
+     */
     public static void main(String[] args) throws IOException {
         //        Map<String, Module> modules = Parser.parse("src/main/resources/day20/simple-example.txt");
         Map<String, Module> modules = Parser.parse("src/main/resources/day20/my-example.txt");
@@ -19,30 +23,20 @@ public class PulsePropagation {
 
         initConjunctionModules(modules);
 
-        long highCount = 0;
-        long lowCount = 0;
-
         Queue<Pulse> queue = new LinkedList<>();
 
         Map<String, Long> soughtIterationWithLowPulse = new HashMap<>();
         Set<String> probedModules = Set.of("mk", "fp", "xt", "zc");
 
-        for (int i = 1; i < 100000; i++) {
-            System.out.println("Press " + i);
+        long pressNumber = 0;
+        while (true) {
+            pressNumber++;
             queue.add(new Pulse("button", "broadcaster", false));
             while (!queue.isEmpty()) {
                 Pulse pulse = queue.poll();
-                System.out.println(pulse);
-                if (pulse.isHighPulse) {
-                    highCount++;
-                } else {
-                    lowCount++;
-                }
-
-                //                if (pulse.target.equals("rx") && !pulse.isHighPulse) {
                 if (probedModules.contains(pulse.target) && !pulse.isHighPulse) {
                     if (soughtIterationWithLowPulse.get(pulse.target) == null) {
-                        soughtIterationWithLowPulse.put(pulse.target, (long) i);
+                        soughtIterationWithLowPulse.put(pulse.target, pressNumber);
                     }
                     if (soughtIterationWithLowPulse.size() == probedModules.size()) {
                         System.out.println(soughtIterationWithLowPulse);
@@ -50,8 +44,6 @@ public class PulsePropagation {
                         System.out.println("Part 2 result " + part2Result);
                         System.exit(0);
                     }
-
-                    System.out.println("Number of button presses " + (i));
                     break;
                 }
                 Module targetModule = modules.get(pulse.target);
@@ -61,9 +53,6 @@ public class PulsePropagation {
                 queue.addAll(targetModule.apply(pulse));
             }
         }
-        System.out.println("High count " + highCount);
-        System.out.println("Low count " + lowCount);
-        System.out.println("Result: " + highCount * lowCount);
     }
 
     private static void initConjunctionModules(Map<String, Module> modules) {
