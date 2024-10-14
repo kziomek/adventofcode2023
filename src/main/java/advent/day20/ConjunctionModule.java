@@ -15,7 +15,13 @@ public class ConjunctionModule extends Module {
     @Override
     public List<Pulse> apply(Pulse pulse) {
         inputs.put(pulse.source, pulse.isHighPulse);
+        System.out.println(name + " trues " + inputs.values().stream().filter(v -> v.equals(true)).count());
         boolean shouldProducedHighPulse = inputs.containsValue(false);
+        if (!shouldProducedHighPulse) {
+            System.out.println("conj " + name);
+            System.out.println(pulse.source + " pulsing low to " + name);
+            System.out.print("");
+        }
         return targets.stream().map(target -> new Pulse(pulse.target, target, shouldProducedHighPulse)).toList();
     }
 
