@@ -4,24 +4,30 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class StepCounter {
 
     public static void main(String[] args) throws IOException {
-        //        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/my-input.txt"))
+        // my-input config
+        //        int stepsToBuildPattern = 1024;
+
+        // example config
+        int stepsToBuildPattern = 128;
+
+        //                char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/my-input.txt"))
+
         char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/example.txt"))
             .stream()
             .map(String::toCharArray).toArray(char[][]::new);
 
-        grid = enlargeGrid(grid, 51);
+        grid = enlargeGrid(grid, 31);
 
         //        print(grid);
 
         List<Integer> counts = new ArrayList<>();
 
-        for (int i = 0; i < 94; i++) {
+        for (int i = 0; i < stepsToBuildPattern; i++) {
             System.out.println();
             grid = iterate(grid);
             //            print(grid);
@@ -41,81 +47,109 @@ public class StepCounter {
         }
         System.out.println("diifs " + diffs);
 
-        List<Integer> diffs2 = new ArrayList<>();
-        for (int i = 0; i < diffs.size() - 1; i++) {
-            diffs2.add(diffs.get(i + 1) - diffs.get(i));
-        }
-        System.out.println("diifs2 " + diffs2);
+        int patternLength = findPatternLength(diffs);
+        validatePattern(diffs, patternLength);
+        System.out.println("Pattern length " + patternLength);
 
-        //        List<Integer> diffs3 = new ArrayList<>();
-        //        for (int i = 0; i < diffs2.size() - 1; i++) {
-        //            diffs3.add(diffs2.get(i + 1) - diffs2.get(i));
+        //        List<Integer> diffs2 = new ArrayList<>();
+        //        for (int i = 0; i < diffs.size() - 1; i++) {
+        //            diffs2.add(diffs.get(i + 1) - diffs.get(i));
         //        }
-        //        System.out.println("diifs3 " + diffs3);
+        //        System.out.println("diifs2 " + diffs2);
+        //
+        //        //        List<Integer> diffs3 = new ArrayList<>();
+        //        //        for (int i = 0; i < diffs2.size() - 1; i++) {
+        //        //            diffs3.add(diffs2.get(i + 1) - diffs2.get(i));
+        //        //        }
+        //        //        System.out.println("diifs3 " + diffs3);
+        //
+        //        for (Integer i : diffs2) {
+        //            if (i > 0) {
+        //                System.out.print(1 + " ");
+        //            } else if (i < 0) {
+        //                System.out.print(0 + " ");
+        //            } else {
+        //                System.out.print(". ");
+        //            }
+        //        }
+        //        System.out.println();
+        //        System.out.println("diff1 size " + diffs.size());
+        //        System.out.println("diff2 size" + diffs2.size());
+        //
+        //        int steps = 4999;
+        //
+        //        int rest = (steps - diffs.size()) % 11;
+        //
+        //        int iters = (steps - (counts.size() - 1) - rest) / 11;
+        //
+        //        long[] diffDelta = new long[11];
+        //        for (int i = 0; i < diffDelta.length; i++) {
+        //            diffDelta[i] = diffs.get(diffs.size() - 11 + i) - diffs.get(diffs.size() - 22 + i);
+        //        }
+        //
+        //        long[] pattern = new long[11];
+        //        for (int i = 0; i < pattern.length; i++) {
+        //            pattern[i] = diffs2.get(diffs2.size() - 11 + i);
+        //        }
+        //
+        //        long[] increments = new long[11];
+        //        for (int i = 0; i < increments.length; i++) {
+        //            increments[i] = diffs2.get(diffs2.size() - 11 + i) - diffs2.get(diffs2.size() - 22 + i);
+        //        }
+        //
+        //        long[] lastCounts = new long[11];
+        //        for (int i = 0; i < lastCounts.length; i++) {
+        //            lastCounts[i] = counts.get(counts.size() - 11 + i);
+        //        }
+        //
+        //        long[] lastDiffs = new long[11];
+        //        for (int i = 0; i < lastDiffs.length; i++) {
+        //            lastDiffs[i] = diffs.get(diffs.size() - 11 + i);
+        //        }
+        //
+        //        System.out.println("rest " + rest);
+        //        if (rest!=0) throw new IllegalStateException("Rest is not 0");
+        //        System.out.println("iters " + iters);
+        //
+        //        long multiplier = multiplier(iters);
+        //
+        //        System.out.println("multiplier " + multiplier);
+        //
+        //        print("lastCounts", lastCounts);
+        //        print("lastDiffs", lastDiffs);
+        //        print("diffDelta", diffDelta);
+        //        //        print("pattern", pattern);
+        //        //        print("increments", increments);
+        //
+        //        long result = calculateRes(lastCounts, lastDiffs, diffDelta, iters, multiplier);
+        //
+        //        System.out.println("Result " + result);
+        //        //        System.out.println("increments " + List.of(increments));
 
-        for (Integer i : diffs2) {
-            if (i > 0) {
-                System.out.print(1 + " ");
-            } else if (i < 0) {
-                System.out.print(0 + " ");
-            } else {
-                System.out.print(". ");
+    }
+
+    private static void validatePattern(List<Integer> diffs, int patternLength) {
+        for (int i = 0; i < patternLength; i++) {
+            int id1 = diffs.size() - 1 - i;
+            int id2 = diffs.size() - 1 - i - patternLength;
+            int id3 = diffs.size() - 1 - i - 2 * patternLength;
+            System.out.println(" " + diffs.get(id1) + " " + diffs.get(id2) + " " + diffs.get(id3));
+            if (diffs.get(id1) - diffs.get(id2) != diffs.get(id2) - diffs.get(id3)) {
+                throw new IllegalStateException("invalid pattern");
             }
         }
-        System.out.println();
-        System.out.println("diff1 size " + diffs.size());
-        System.out.println("diff2 size" + diffs2.size());
+    }
 
-        int steps = 4999;
-
-        int rest = (steps - diffs.size()) % 11;
-
-        int iters = (steps - (counts.size() - 1) - rest) / 11;
-
-        long[] diffDelta = new long[11];
-        for (int i = 0; i < diffDelta.length; i++) {
-            diffDelta[i] = diffs.get(diffs.size() - 11 + i) - diffs.get(diffs.size() - 22 + i);
+    private static int findPatternLength(List<Integer> diffs) {
+        int lastIndex = diffs.size() - 1;
+        for (int i = 1; i < diffs.size() / 3; i++) {
+            if (diffs.get(lastIndex) - diffs.get(lastIndex - i) == diffs.get(lastIndex - i) - diffs.get(lastIndex - 2 * i) && diffs.get(lastIndex - i) - diffs.get(lastIndex - 2 * i) == diffs.get(lastIndex - 2 * i) - diffs.get(lastIndex - 3 * i)) {
+                System.out.println("Pattern distance " + i);
+                System.out.println(" " + diffs.get(lastIndex - 2 * i) + " " + diffs.get(lastIndex - i) + " " + diffs.get(lastIndex));
+                return i;
+            }
         }
-
-        long[] pattern = new long[11];
-        for (int i = 0; i < pattern.length; i++) {
-            pattern[i] = diffs2.get(diffs2.size() - 11 + i);
-        }
-
-        long[] increments = new long[11];
-        for (int i = 0; i < increments.length; i++) {
-            increments[i] = diffs2.get(diffs2.size() - 11 + i) - diffs2.get(diffs2.size() - 22 + i);
-        }
-
-        long[] lastCounts = new long[11];
-        for (int i = 0; i < lastCounts.length; i++) {
-            lastCounts[i] = counts.get(counts.size() - 11 + i);
-        }
-
-        long[] lastDiffs = new long[11];
-        for (int i = 0; i < lastDiffs.length; i++) {
-            lastDiffs[i] = diffs.get(diffs.size() - 11 + i);
-        }
-
-        System.out.println("rest " + rest);
-        if (rest!=0) throw new IllegalStateException("Rest is not 0");
-        System.out.println("iters " + iters);
-
-        long multiplier = multiplier(iters);
-
-        System.out.println("multiplier " + multiplier);
-
-        print("lastCounts", lastCounts);
-        print("lastDiffs", lastDiffs);
-        print("diffDelta", diffDelta);
-        //        print("pattern", pattern);
-        //        print("increments", increments);
-
-        long result = calculateRes(lastCounts, lastDiffs, diffDelta, iters, multiplier);
-
-        System.out.println("Result " + result);
-        //        System.out.println("increments " + List.of(increments));
-
+        throw new IllegalStateException("patter not found");
     }
 
     //lastCounter + iters* sum(lastDiffs) + multiplier * sum(diffDelta)
@@ -136,7 +170,7 @@ public class StepCounter {
         if (iters % 2 == 0) {
             result = (1 + iters) * (iters / 2);
         } else {
-//            result = (1 + iters) * (iters / 2) + (iters / 2) ;
+            //            result = (1 + iters) * (iters / 2) + (iters / 2) ;
             throw new IllegalStateException();
         }
         return result;
