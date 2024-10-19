@@ -10,14 +10,15 @@ public class StepCounter {
 
     public static void main(String[] args) throws IOException {
         // my-input config
-        //        int stepsToBuildPattern = 1024;
+        int stepsToBuildPattern = 1024;
+        int steps = 26501365;
 
         // example config
-        int stepsToBuildPattern = 116;
+        //        int stepsToBuildPattern = 116;
+        //        int steps = 5000;
 
-        //                char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/my-input.txt"))
-
-        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/example.txt"))
+        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/my-input.txt"))
+            //        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/example.txt"))
             .stream()
             .map(String::toCharArray).toArray(char[][]::new);
 
@@ -27,35 +28,39 @@ public class StepCounter {
 
         List<Integer> counts = new ArrayList<>();
 
+        List<Integer> diffs = new ArrayList<>();
+        int patternLength = -1;
         for (int i = 0; i < stepsToBuildPattern; i++) {
             System.out.println();
             grid = iterate(grid);
-            //            print(grid);
             int count = countReachedFields(grid);
             counts.add(count);
             System.out.println(i + " " + count);
+            if (i > 0) {
+                diffs.add(counts.get(i) - counts.get(i - 1));
+            }
+
+            patternLength = findPatternLength(diffs);
+            if (patternLength > 0) {
+                boolean isValid = validatePattern(diffs, patternLength);
+                if (isValid) {
+                    int rest = (steps - diffs.size() - 1) % patternLength;
+                    if (rest == 0) {
+                        break;
+                    }
+                }
+            }
+
+            System.out.println("Pattern length " + patternLength);
         }
 
-        //        print(grid);
         validateGrid(grid);
 
         System.out.println("Result " + counts);
 
-        List<Integer> diffs = new ArrayList<>();
-        for (int i = 0; i < counts.size() - 1; i++) {
-            diffs.add(counts.get(i + 1) - counts.get(i));
-        }
         System.out.println("diifs " + diffs);
 
-        int patternLength = findPatternLength(diffs);
-        validatePattern(diffs, patternLength);
-        System.out.println("Pattern length " + patternLength);
-
-        int steps = 5000;
-
-        int rest = (steps - diffs.size() - 1) % patternLength;
-
-        int iters = (steps - (counts.size()) - rest) / patternLength;
+        int iters = (steps - (counts.size())) / patternLength;
 
         long[] diffDelta = new long[patternLength];
         for (int i = 0; i < diffDelta.length; i++) {
@@ -72,10 +77,6 @@ public class StepCounter {
             lastDiffs[i] = diffs.get(diffs.size() - patternLength + i);
         }
 
-        System.out.println("rest " + rest);
-        if (rest != 0) {
-            throw new IllegalStateException("Rest is not 0");
-        }
         System.out.println("iters " + iters);
 
         long multiplier = multiplier(iters);
@@ -85,26 +86,23 @@ public class StepCounter {
         print("lastCounts", lastCounts);
         print("lastDiffs", lastDiffs);
         print("diffDelta", diffDelta);
-        //        print("pattern", pattern);
-        //        print("increments", increments);
 
         long result = calculateRes(lastCounts, lastDiffs, diffDelta, iters, multiplier);
 
         System.out.println("Result " + result);
-        //        System.out.println("increments " + List.of(increments));
-
     }
 
-    private static void validatePattern(List<Integer> diffs, int patternLength) {
+    private static boolean validatePattern(List<Integer> diffs, int patternLength) {
         for (int i = 0; i < patternLength; i++) {
             int id1 = diffs.size() - 1 - i;
             int id2 = diffs.size() - 1 - i - patternLength;
             int id3 = diffs.size() - 1 - i - 2 * patternLength;
-            System.out.println(" " + diffs.get(id1) + " " + diffs.get(id2) + " " + diffs.get(id3));
+//            System.out.println(" " + diffs.get(id1) + " " + diffs.get(id2) + " " + diffs.get(id3));
             if (diffs.get(id1) - diffs.get(id2) != diffs.get(id2) - diffs.get(id3)) {
-                throw new IllegalStateException("invalid pattern");
+                return false;
             }
         }
+        return true;
     }
 
     private static int findPatternLength(List<Integer> diffs) {
@@ -116,7 +114,7 @@ public class StepCounter {
                 return i;
             }
         }
-        throw new IllegalStateException("patter not found");
+        return -1;
     }
 
     //lastCounter + iters* sum(lastDiffs) + multiplier * sum(diffDelta)
@@ -133,12 +131,11 @@ public class StepCounter {
     }
 
     private static long multiplier(long iters) {
-        long result = 0;
+        long result;
         if (iters % 2 == 0) {
             result = (1 + iters) * (iters / 2);
         } else {
-            //            result = (1 + iters) * (iters / 2) + (iters / 2) ;
-            throw new IllegalStateException();
+            result = (1 + iters) * (iters / 2) + (iters / 2 + 1);
         }
         return result;
     }
