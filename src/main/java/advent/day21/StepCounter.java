@@ -51,11 +51,11 @@ public class StepCounter {
         validatePattern(diffs, patternLength);
         System.out.println("Pattern length " + patternLength);
 
-        int steps = 4999;
+        int steps = 5000;
 
-        int rest = (steps - diffs.size()) % patternLength;
+        int rest = (steps - diffs.size() - 1) % patternLength;
 
-        int iters = (steps - (counts.size() - 1) - rest) / patternLength;
+        int iters = (steps - (counts.size()) - rest) / patternLength;
 
         long[] diffDelta = new long[patternLength];
         for (int i = 0; i < diffDelta.length; i++) {
