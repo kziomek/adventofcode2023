@@ -8,6 +8,17 @@ import java.util.List;
 
 public class StepCounter {
 
+    /**
+     * In this solution we need to observe that from certain number of steps there is repeatable pattern which can be used to calculate further number of steps.
+     * In my example pattern length is 131 steps.
+     * In consecutive pattern elements growing steadily by fixed number of steps.
+     * patternIters - number of pattern lenghts needed to reach defined step.
+     * patternIters is multiplied by sum of last diffs in pattern length - this is how much number of steps would grow if not expanded
+     * therefore we need to add how quickly sum of diffs is growing in next pattern.
+     *
+     *
+     * // total number of 'O' = lastCounter + patternIters * sum(lastDiffs) + multiplier * sum(diffDelta)
+     */
     public static void main(String[] args) throws IOException {
         // my-input config
         int stepsToBuildPattern = 1024;
@@ -60,7 +71,7 @@ public class StepCounter {
 
         System.out.println("diifs " + diffs);
 
-        int iters = (steps - (counts.size())) / patternLength;
+        int patternIters = (steps - (counts.size())) / patternLength;
 
         long[] diffDelta = new long[patternLength];
         for (int i = 0; i < diffDelta.length; i++) {
@@ -77,9 +88,9 @@ public class StepCounter {
             lastDiffs[i] = diffs.get(diffs.size() - patternLength + i);
         }
 
-        System.out.println("iters " + iters);
+        System.out.println("patternIters " + patternIters);
 
-        long multiplier = multiplier(iters);
+        long multiplier = multiplier(patternIters);
 
         System.out.println("multiplier " + multiplier);
 
@@ -87,7 +98,7 @@ public class StepCounter {
         print("lastDiffs", lastDiffs);
         print("diffDelta", diffDelta);
 
-        long result = calculateRes(lastCounts, lastDiffs, diffDelta, iters, multiplier);
+        long result = calculateRes(lastCounts[lastCounts.length - 1], lastDiffs, diffDelta, patternIters, multiplier);
 
         System.out.println("Result " + result);
     }
@@ -97,7 +108,7 @@ public class StepCounter {
             int id1 = diffs.size() - 1 - i;
             int id2 = diffs.size() - 1 - i - patternLength;
             int id3 = diffs.size() - 1 - i - 2 * patternLength;
-//            System.out.println(" " + diffs.get(id1) + " " + diffs.get(id2) + " " + diffs.get(id3));
+            //            System.out.println(" " + diffs.get(id1) + " " + diffs.get(id2) + " " + diffs.get(id3));
             if (diffs.get(id1) - diffs.get(id2) != diffs.get(id2) - diffs.get(id3)) {
                 return false;
             }
@@ -118,8 +129,8 @@ public class StepCounter {
     }
 
     //lastCounter + iters* sum(lastDiffs) + multiplier * sum(diffDelta)
-    private static long calculateRes(long[] lastCounts, long[] lastDiffs, long[] diffDelta, long iters, long multiplier) {
-        return lastCounts[lastCounts.length - 1] + iters * sum(lastDiffs) + multiplier * sum(diffDelta);
+    private static long calculateRes(long lastCount, long[] lastDiffs, long[] diffDelta, long iters, long multiplier) {
+        return lastCount + iters * sum(lastDiffs) + multiplier * sum(diffDelta);
     }
 
     private static long sum(long[] arr) {
