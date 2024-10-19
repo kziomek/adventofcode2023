@@ -3,24 +3,172 @@ package advent.day21;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class StepCounter {
 
     public static void main(String[] args) throws IOException {
-        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/my-input.txt"))
+        //        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/my-input.txt"))
+        char[][] grid = Files.readAllLines(Path.of("src/main/resources/day21/example.txt"))
             .stream()
             .map(String::toCharArray).toArray(char[][]::new);
 
-        print(grid);
+        grid = enlargeGrid(grid, 51);
 
-        for (int i = 0; i < 64; i++) {
+        //        print(grid);
+
+        List<Integer> counts = new ArrayList<>();
+
+        for (int i = 0; i < 94; i++) {
             System.out.println();
             grid = iterate(grid);
-            print(grid);
+            //            print(grid);
+            int count = countReachedFields(grid);
+            counts.add(count);
+            System.out.println(i + " " + count);
         }
 
-        int count = countReachedFields(grid);
-        System.out.println("Result " + count);
+        //        print(grid);
+        validateGrid(grid);
+
+        System.out.println("Result " + counts);
+
+        List<Integer> diffs = new ArrayList<>();
+        for (int i = 0; i < counts.size() - 1; i++) {
+            diffs.add(counts.get(i + 1) - counts.get(i));
+        }
+        System.out.println("diifs " + diffs);
+
+        List<Integer> diffs2 = new ArrayList<>();
+        for (int i = 0; i < diffs.size() - 1; i++) {
+            diffs2.add(diffs.get(i + 1) - diffs.get(i));
+        }
+        System.out.println("diifs2 " + diffs2);
+
+        //        List<Integer> diffs3 = new ArrayList<>();
+        //        for (int i = 0; i < diffs2.size() - 1; i++) {
+        //            diffs3.add(diffs2.get(i + 1) - diffs2.get(i));
+        //        }
+        //        System.out.println("diifs3 " + diffs3);
+
+        for (Integer i : diffs2) {
+            if (i > 0) {
+                System.out.print(1 + " ");
+            } else if (i < 0) {
+                System.out.print(0 + " ");
+            } else {
+                System.out.print(". ");
+            }
+        }
+        System.out.println();
+        System.out.println("diff1 size " + diffs.size());
+        System.out.println("diff2 size" + diffs2.size());
+
+        int steps = 4999;
+
+        int rest = (steps - diffs.size()) % 11;
+
+        int iters = (steps - (counts.size() - 1) - rest) / 11;
+
+        long[] diffDelta = new long[11];
+        for (int i = 0; i < diffDelta.length; i++) {
+            diffDelta[i] = diffs.get(diffs.size() - 11 + i) - diffs.get(diffs.size() - 22 + i);
+        }
+
+        long[] pattern = new long[11];
+        for (int i = 0; i < pattern.length; i++) {
+            pattern[i] = diffs2.get(diffs2.size() - 11 + i);
+        }
+
+        long[] increments = new long[11];
+        for (int i = 0; i < increments.length; i++) {
+            increments[i] = diffs2.get(diffs2.size() - 11 + i) - diffs2.get(diffs2.size() - 22 + i);
+        }
+
+        long[] lastCounts = new long[11];
+        for (int i = 0; i < lastCounts.length; i++) {
+            lastCounts[i] = counts.get(counts.size() - 11 + i);
+        }
+
+        long[] lastDiffs = new long[11];
+        for (int i = 0; i < lastDiffs.length; i++) {
+            lastDiffs[i] = diffs.get(diffs.size() - 11 + i);
+        }
+
+        System.out.println("rest " + rest);
+        if (rest!=0) throw new IllegalStateException("Rest is not 0");
+        System.out.println("iters " + iters);
+
+        long multiplier = multiplier(iters);
+
+        System.out.println("multiplier " + multiplier);
+
+        print("lastCounts", lastCounts);
+        print("lastDiffs", lastDiffs);
+        print("diffDelta", diffDelta);
+        //        print("pattern", pattern);
+        //        print("increments", increments);
+
+        long result = calculateRes(lastCounts, lastDiffs, diffDelta, iters, multiplier);
+
+        System.out.println("Result " + result);
+        //        System.out.println("increments " + List.of(increments));
+
+    }
+
+    //lastCounter + iters* sum(lastDiffs) + multiplier * sum(diffDelta)
+    private static long calculateRes(long[] lastCounts, long[] lastDiffs, long[] diffDelta, long iters, long multiplier) {
+        return lastCounts[lastCounts.length - 1] + iters * sum(lastDiffs) + multiplier * sum(diffDelta);
+    }
+
+    private static long sum(long[] arr) {
+        long sum = 0;
+        for (long l : arr) {
+            sum += l;
+        }
+        return sum;
+    }
+
+    private static long multiplier(long iters) {
+        long result = 0;
+        if (iters % 2 == 0) {
+            result = (1 + iters) * (iters / 2);
+        } else {
+//            result = (1 + iters) * (iters / 2) + (iters / 2) ;
+            throw new IllegalStateException();
+        }
+        return result;
+    }
+
+    private static void validateGrid(char[][] grid) {
+        for (int i = 0; i < grid.length; i++) {
+            if (grid[i][0] == 'O' || grid[i][grid[0].length - 1] == 'O') {
+                System.out.println("Too small grid");
+                System.exit(-1);
+            }
+        }
+        for (int j = 0; j < grid[0].length; j++) {
+            if (grid[0][j] == 'O' || grid[grid.length - 1][j] == 'O') {
+                System.out.println("Too small grid");
+                System.exit(-1);
+            }
+        }
+    }
+
+    private static char[][] enlargeGrid(char[][] grid, int times) {
+        char[][] enlargedGrid = new char[times * grid.length][times * grid[0].length];
+        for (int i = 0; i < enlargedGrid.length; i++) {
+            for (int j = 0; j < enlargedGrid[0].length; j++) {
+                enlargedGrid[i][j] = grid[i % grid.length][j % grid[0].length];
+                if ((i != enlargedGrid.length / 2 || j != enlargedGrid[0].length / 2) && enlargedGrid[i][j] == 'S') {
+                    enlargedGrid[i][j] = '.';
+                }
+            }
+        }
+
+        return enlargedGrid;
     }
 
     private static int countReachedFields(char[][] grid) {
@@ -88,5 +236,13 @@ public class StepCounter {
             }
             System.out.println();
         }
+    }
+
+    private static void print(String label, long[] arr) {
+        System.out.print(label + "  ");
+        for (long c : arr) {
+            System.out.print(c + " ");
+        }
+        System.out.println();
     }
 }
