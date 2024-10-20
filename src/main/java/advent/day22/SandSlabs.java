@@ -3,6 +3,7 @@ package advent.day22;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,7 +22,7 @@ public class SandSlabs {
 
         validateOrientation(bricks);
 
-        //        bricks.sort(Comparator.comparingInt(brick -> brick.a.z));
+        bricks.sort(Comparator.comparingInt(brick -> brick.a.z));
         System.out.println("Bricks");
         System.out.println(bricks);
         //sort by z
