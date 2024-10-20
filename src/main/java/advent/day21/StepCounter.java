@@ -9,15 +9,19 @@ import java.util.List;
 public class StepCounter {
 
     /**
+     * Advent of Code 2023 - Day 21
+     * https://adventofcode.com/2023/day/21
+     *
      * In this solution we need to observe that from certain number of steps there is repeatable pattern which can be used to calculate further number of steps.
      * In my example pattern length is 131 steps.
-     * In consecutive pattern elements growing steadily by fixed number of steps.
-     * patternIters - number of pattern lenghts needed to reach defined step.
-     * patternIters is multiplied by sum of last diffs in pattern length - this is how much number of steps would grow if not expanded
-     * therefore we need to add how quickly sum of diffs is growing in next pattern.
-     *
-     *
-     * // total number of 'O' = lastCounter + patternIters * sum(lastDiffs) + multiplier * sum(diffDelta)
+     * In advent example pattern length is 11 steps.
+     * <p>
+     * In consecutive pattern elements are growing by formula.
+     * reached fields = lastCount + remainingPatternIterations * sum(lastDiffs) + diffDeltaMultiplier * sum(incrementDeltas);
+     * <p>
+     * We start from lastCount which is already calculated up to this point.
+     * We add multiply of remaining patternIterations and sum of 11 last diffs.
+     * We calculate sum of increment deltas between consecutive patterns and multiply it accordingly by diffDeltaMultiplier based on number of remaining iterations.
      */
     public static void main(String[] args) throws IOException {
         // my-input config
@@ -38,77 +42,48 @@ public class StepCounter {
         //        print(grid);
 
         List<Integer> counts = new ArrayList<>();
+        List<Integer> increments = new ArrayList<>();
 
-        List<Integer> diffs = new ArrayList<>();
+        // Find pattern length and adjust count position to pattern length multipier so remaining steps divides by pattern length without rest.
         int patternLength = -1;
         for (int i = 0; i < stepsToBuildPattern; i++) {
-            System.out.println();
             grid = iterate(grid);
             int count = countReachedFields(grid);
             counts.add(count);
-            System.out.println(i + " " + count);
             if (i > 0) {
-                diffs.add(counts.get(i) - counts.get(i - 1));
+                increments.add(counts.get(i) - counts.get(i - 1));
             }
-
-            patternLength = findPatternLength(diffs);
+            patternLength = findPatternLength(increments);
             if (patternLength > 0) {
-                boolean isValid = validatePattern(diffs, patternLength);
+                boolean isValid = isValidPattern(increments, patternLength);
                 if (isValid) {
-                    int rest = (steps - diffs.size() - 1) % patternLength;
-                    if (rest == 0) {
+                    int remainingSteps = (steps - counts.size()) % patternLength;
+                    if (remainingSteps == 0) {
+                        validateGrid(grid);
                         break;
                     }
                 }
             }
-
-            System.out.println("Pattern length " + patternLength);
         }
 
-        validateGrid(grid);
+        int remainingPatternIterations = (steps - (counts.size())) / patternLength;
 
-        System.out.println("Result " + counts);
+        System.out.println("Counts " + counts);
+        System.out.println("increments " + increments);
 
-        System.out.println("diifs " + diffs);
+        System.out.println("Pattern length " + patternLength);
+        System.out.println("remainingPatternIterations " + remainingPatternIterations);
 
-        int patternIters = (steps - (counts.size())) / patternLength;
+        long result = calculateTotalReachedFields(counts, increments, patternLength, remainingPatternIterations);
 
-        long[] diffDelta = new long[patternLength];
-        for (int i = 0; i < diffDelta.length; i++) {
-            diffDelta[i] = diffs.get(diffs.size() - patternLength + i) - diffs.get(diffs.size() - 2 * patternLength + i);
-        }
-
-        long[] lastCounts = new long[patternLength];
-        for (int i = 0; i < lastCounts.length; i++) {
-            lastCounts[i] = counts.get(counts.size() - patternLength + i);
-        }
-
-        long[] lastDiffs = new long[patternLength];
-        for (int i = 0; i < lastDiffs.length; i++) {
-            lastDiffs[i] = diffs.get(diffs.size() - patternLength + i);
-        }
-
-        System.out.println("patternIters " + patternIters);
-
-        long multiplier = multiplier(patternIters);
-
-        System.out.println("multiplier " + multiplier);
-
-        print("lastCounts", lastCounts);
-        print("lastDiffs", lastDiffs);
-        print("diffDelta", diffDelta);
-
-        long result = calculateRes(lastCounts[lastCounts.length - 1], lastDiffs, diffDelta, patternIters, multiplier);
-
-        System.out.println("Result " + result);
+        System.out.println("Total reached fields " + result + " at step " + steps);
     }
 
-    private static boolean validatePattern(List<Integer> diffs, int patternLength) {
+    private static boolean isValidPattern(List<Integer> diffs, int patternLength) {
         for (int i = 0; i < patternLength; i++) {
             int id1 = diffs.size() - 1 - i;
             int id2 = diffs.size() - 1 - i - patternLength;
             int id3 = diffs.size() - 1 - i - 2 * patternLength;
-            //            System.out.println(" " + diffs.get(id1) + " " + diffs.get(id2) + " " + diffs.get(id3));
             if (diffs.get(id1) - diffs.get(id2) != diffs.get(id2) - diffs.get(id3)) {
                 return false;
             }
@@ -120,17 +95,39 @@ public class StepCounter {
         int lastIndex = diffs.size() - 1;
         for (int i = 1; i < diffs.size() / 3; i++) {
             if (diffs.get(lastIndex) - diffs.get(lastIndex - i) == diffs.get(lastIndex - i) - diffs.get(lastIndex - 2 * i) && diffs.get(lastIndex - i) - diffs.get(lastIndex - 2 * i) == diffs.get(lastIndex - 2 * i) - diffs.get(lastIndex - 3 * i)) {
-                System.out.println("Pattern distance " + i);
-                System.out.println(" " + diffs.get(lastIndex - 2 * i) + " " + diffs.get(lastIndex - i) + " " + diffs.get(lastIndex));
                 return i;
             }
         }
         return -1;
     }
 
-    //lastCounter + iters* sum(lastDiffs) + multiplier * sum(diffDelta)
-    private static long calculateRes(long lastCount, long[] lastDiffs, long[] diffDelta, long iters, long multiplier) {
-        return lastCount + iters * sum(lastDiffs) + multiplier * sum(diffDelta);
+    //lastCount + remainingPatternIterations * sum(lastDiffs) + diffDeltaMultiplier * sum(incrementDeltas);
+    private static long calculateTotalReachedFields(List<Integer> counts, List<Integer> increments, int patternLength, long remainingPatternIterations) {
+
+        long[] lastCounts = new long[patternLength];
+        for (int i = 0; i < lastCounts.length; i++) {
+            lastCounts[i] = counts.get(counts.size() - patternLength + i);
+        }
+
+        long[] incrementDeltas = new long[patternLength];
+        for (int i = 0; i < incrementDeltas.length; i++) {
+            incrementDeltas[i] = increments.get(increments.size() - patternLength + i) - increments.get(increments.size() - 2 * patternLength + i);
+        }
+
+        long[] lastDiffs = new long[patternLength];
+        for (int i = 0; i < lastDiffs.length; i++) {
+            lastDiffs[i] = increments.get(increments.size() - patternLength + i);
+        }
+
+        long lastCount = lastCounts[lastCounts.length - 1];
+        long diffDeltaMultiplier = multiplier(remainingPatternIterations);
+
+        print("lastCounts", lastCounts);
+        print("lastDiffs", lastDiffs);
+        print("incrementDeltas", incrementDeltas);
+        System.out.println("diffDeltaMultiplier " + diffDeltaMultiplier);
+
+        return lastCount + remainingPatternIterations * sum(lastDiffs) + diffDeltaMultiplier * sum(incrementDeltas);
     }
 
     private static long sum(long[] arr) {
