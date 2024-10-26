@@ -1,10 +1,19 @@
 package advent.day22;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class Brick {
     Point a, b;
 
+    boolean hasMoreThanOneSupporingBrick;
+    Set<Brick> supportedBricks = new HashSet<>();
+    Set<Brick> supportingBricks = new HashSet<>();
+
+    //    List<Brick> supportingBricks = new ArrayList<>();
     public Brick(String[] points) {
         a = new Point(points[0]);
         b = new Point(points[1]);
@@ -13,6 +22,22 @@ public class Brick {
     public Brick(Point pointA, Point pointB) {
         this.a = pointA;
         this.b = pointB;
+    }
+
+    public boolean hasRemainingSupportingBricks(Set<Brick> lostSupportingBricks) {
+        return !lostSupportingBricks.containsAll(supportingBricks);
+    }
+
+    public void setHasMoreThanOneSupporingBrick(boolean hasMoreThanOneSupporingBrick) {
+        this.hasMoreThanOneSupporingBrick = hasMoreThanOneSupporingBrick;
+    }
+
+    public void setSupportedBricks(Set<Brick> supportedBricks) {
+        this.supportedBricks = supportedBricks;
+    }
+
+    public void setSupportingBricks(Set<Brick> supportingBricks) {
+        this.supportingBricks = supportingBricks;
     }
 
     @Override

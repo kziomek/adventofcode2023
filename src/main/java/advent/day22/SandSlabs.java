@@ -14,8 +14,8 @@ import java.util.Set;
 // TODO Debug around slabs spanning across oz
 public class SandSlabs {
     public static void main(String[] args) throws IOException {
-        //                        List<Brick> bricks = Parser.parse(Path.of("src/main/resources/day22/example.txt"));
-        List<Brick> bricks = Parser.parse(Path.of("src/main/resources/day22/my-input.txt"));
+//        List<Brick> bricks = Parser.parse(Path.of("src/main/resources/day22/example.txt"));
+                        List<Brick> bricks = Parser.parse(Path.of("src/main/resources/day22/my-input.txt"));
         //                        List<Brick> bricks = Parser.parse(Path.of("src/main/resources/day22/small-input.txt"));
 
         bricks = new ArrayList<>(bricks); // mutable
@@ -38,8 +38,131 @@ public class SandSlabs {
 
         //        validateZOdrer(settledBricks);
 
-        int result = countDesintegrationCandidates(settledBricks);
-        System.out.println("Part1 result " + result);
+        //        int result = countDesintegrationCandidates(settledBricks);
+
+        // todo instead of building  new graph, reuse brick as node to add information on supported bricks and if there is more than one supporter to the brick
+        // then reimplement part 1
+        // then reimplement part 2
+        conntectBricksInGraph(settledBricks);
+        int part1Result = solvePart1(settledBricks);
+        int part2Result = solvePart2(settledBricks);
+        // then
+
+        //        System.out.println("Part1 result " + result);
+        System.out.println("Part1 result " + part1Result);
+        System.out.println("Part2 result " + part2Result);
+    }
+
+    private static int solvePart2(List<Brick> settledBricks) {
+        System.out.println("Solve Part 2");
+
+        int count = 0;
+
+        for (int i = settledBricks.size() - 1; i >= 0; i--) {
+            Brick supportingBrick = settledBricks.get(i);
+            System.out.println("supporting brick " + supportingBrick);
+            int countFalling = 0;
+            Set<Brick> disintegratedBricks = new HashSet<>();
+            disintegratedBricks.add(supportingBrick);
+
+            int lastSeenSize = disintegratedBricks.size();
+            do {
+                for (Brick supportedBrick : supportingBrick.supportedBricks) {
+                    lastSeenSize = disintegratedBricks.size();
+                    if (!supportedBrick.hasRemainingSupportingBricks(disintegratedBricks)) { // it would collapse, count it and upper bricks
+                        System.out.println(supportedBrick + " - no secondary support");
+                        countFalling += countFalling(supportedBrick, disintegratedBricks);
+                        System.out.println(countFalling + " falling for " + supportingBrick);
+                    }
+                }
+            }
+            while (lastSeenSize != disintegratedBricks.size());
+            count += countFalling;
+        }
+        return count;
+    }
+
+    private static int countFalling(Brick brick, Set<Brick> disintegratedBricks) {
+        if (disintegratedBricks.contains(brick)) {
+            return 0;
+        }
+        if (brick.hasRemainingSupportingBricks(disintegratedBricks)) {
+            return 0;
+        }
+        disintegratedBricks.add(brick);
+
+//        if (brick.hasMoreThanOneSupporingBrick) {
+//            return 0;
+//        }
+        int count = 1;
+        for (Brick supportedBrick : brick.supportedBricks) {
+            count += countFalling(supportedBrick, disintegratedBricks);
+        }
+        return count;
+    }
+
+    private static int solvePart1(List<Brick> settledBricks) {
+        int count = 0;
+        for (Brick settledBrick : settledBricks) {
+            boolean areAllSupportedBySecondaryBrick = true;
+            for (Brick supportedBrick : settledBrick.supportedBricks) {
+                Set<Brick> lostSupportingBricks = Set.of(settledBrick);
+                if (!supportedBrick.hasRemainingSupportingBricks(lostSupportingBricks)) {
+                    areAllSupportedBySecondaryBrick = false;
+                }
+
+                //                if (!supportedBrick.hasMoreThanOneSupporingBrick) {
+                //                    areAllSupportedBySecondaryBrick = false;
+                //                }
+            }
+            if (areAllSupportedBySecondaryBrick) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    private static void conntectBricksInGraph(List<Brick> settledBricks) {
+        // group list by a.z
+        Map<Integer, List<Brick>> zMapA = new HashMap<>();
+        for (Brick settledBrick : settledBricks) {
+            zMapA.computeIfAbsent(settledBrick.a.z, k -> new ArrayList<>());
+            zMapA.get(settledBrick.a.z).add(settledBrick);
+        }
+        Map<Integer, List<Brick>> zMapB = new HashMap<>();
+        for (Brick settledBrick : settledBricks) {
+            zMapB.computeIfAbsent(settledBrick.b.z, k -> new ArrayList<>());
+            zMapB.get(settledBrick.b.z).add(settledBrick);
+        }
+
+        //        Set<Brick> disintegrationCandidates = new HashSet<>();
+        for (Brick supportingBrick : settledBricks) {
+            List<Brick> supportedBricks = findSupported(supportingBrick, zMapA.get(supportingBrick.b.z + 1));
+
+            supportingBrick.setSupportedBricks(new HashSet<>(supportedBricks));
+
+            //            Node supportingNode = new Node(supportingBrick);
+            //            supportingNode.setSupportedBricks(supportedBricks);
+
+            System.out.println("Brick " + supportingBrick + " supports " + supportedBricks);
+            //            boolean allSupportedAlsoByAnotherBrick = true;
+            for (Brick supportedBrick : supportedBricks) {
+                supportedBrick.setSupportingBricks(new HashSet<>(supportingBricks(supportedBrick, zMapB.get(supportedBrick.a.z - 1))));
+
+                if (hasAnotherSupport(supportedBrick, supportingBrick, zMapB.get(supportedBrick.a.z - 1))) {
+                    System.out.println("  Brick " + supportedBrick + " has another support");
+                    supportedBrick.setHasMoreThanOneSupporingBrick(true);
+                } else {
+                    supportedBrick.setHasMoreThanOneSupporingBrick(false);
+                    //                    allSupportedAlsoByAnotherBrick = false;
+                }
+            }
+            //            if (allSupportedAlsoByAnotherBrick) {
+            //                System.out.println("    Add disingegration " + supportingBrick);
+            //                disintegrationCandidates.add(supportingBrick);
+            //            }
+        }
     }
 
     private static void validateSettledBricksHaveSupporters(List<Brick> settledBricks) {
@@ -85,7 +208,48 @@ public class SandSlabs {
         }
     }
 
+    //    private static long countPart2(List<Brick> settledBricks) {
+    //        long totalCounter = 0L;
+    //        Map<Brick, Long> fallingNumberMap = new HashMap<>();
+    //
+    //        // group list by a.z
+    //        Map<Integer, List<Brick>> zMapA = new HashMap<>();
+    //        for (Brick settledBrick : settledBricks) {
+    //            zMapA.computeIfAbsent(settledBrick.a.z, k -> new ArrayList<>());
+    //            zMapA.get(settledBrick.a.z).add(settledBrick);
+    //        }
+    //        Map<Integer, List<Brick>> zMapB = new HashMap<>();
+    //        for (Brick settledBrick : settledBricks) {
+    //            zMapB.computeIfAbsent(settledBrick.b.z, k -> new ArrayList<>());
+    //            zMapB.get(settledBrick.b.z).add(settledBrick);
+    //        }
+    //
+    //        for (int i = settledBricks.size() - 1; i > 0; i--) {
+    //            long fallingCounter = 0L;
+    //            Set<Brick> countedBricks = new HashSet<>();
+    //            Brick supportingBrick = settledBricks.get(i);
+    //
+    //            List<Brick> supportedBricks = findSupported(supportingBrick, zMapA.get(supportingBrick.b.z + 1));
+    //            for (Brick supportedBrick : supportedBricks) {
+    //                if (hasAnotherSupport(supportedBrick, supportingBrick, zMapB.get(supportedBrick.a.z - 1))) {
+    //                    System.out.println("  Brick " + supportedBrick + " has another support");
+    //                } else {
+    //
+    //                    fallingCounter += countFallingBricks(supportedBrick, countedBricks, fallingNumberMap);
+    //
+    ////                    allSupportedAlsoByAnotherBrick = false;
+    //                }
+    //            }
+    //            if (fallingCounter > 0) {
+    //                fallingNumberMap.put(supportingBrick, fallingCounter);
+    //            }
+    //        }
+    //
+    //        return totalCounter;
+    //    }
+
     private static int countDesintegrationCandidates(List<Brick> settledBricks) {
+
         // group list by a.z
         Map<Integer, List<Brick>> zMapA = new HashMap<>();
         for (Brick settledBrick : settledBricks) {
@@ -180,6 +344,20 @@ public class SandSlabs {
             .filter(cb -> cb.intersectsXY(supportedBrick)).toList();
 
         return !otherSupporters.isEmpty();
+    }
+
+    private static List<Brick> supportingBricks(Brick supportedBrick, List<Brick> lowerBricks) {
+        if (lowerBricks == null) {
+            return List.of();
+        }
+        List<Brick> supporters = lowerBricks
+            .stream()
+            .filter(cb -> cb.intersectsXY(supportedBrick)).toList();
+
+        if (supportedBrick.b.z - supportedBrick.a.z > 1 && supporters.size() != 1) {
+            throw new IllegalStateException("z brick should have one supporter only");
+        }
+        return supporters;
     }
 
     private static boolean hasAnotherSupport(Brick supportedBrick, Brick supportingBrick, List<Brick> bricks) {
