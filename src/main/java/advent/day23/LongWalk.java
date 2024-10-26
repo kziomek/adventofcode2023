@@ -4,68 +4,84 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+// TODO stack overflow -> refactor solution to use queue or optimize sets
 public class LongWalk {
     public static void main(String[] args) throws IOException {
-//        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/example.txt"));
-        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/my-input.txt"));
+        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/example.txt"));
+//                char[][] grid = Parser.parse(Path.of("src/main/resources/day23/my-input.txt"));
 
         printGrid(grid);
 
-        Set<String> seen = new HashSet<>();
-        //        seen.add(key(0, 1));
-        List<Integer> walkLengths = new ArrayList<>();
-        findLongestPath(grid, 0, 1, seen, walkLengths);
-        walkLengths.sort(Comparator.comparingInt(i -> i));
-        System.out.println(walkLengths);
-        System.out.println("Max walk is " + walkLengths.getLast());
+        int maxWalkLength = findLongestPath(grid);
+
+        System.out.println("Max walk is " + maxWalkLength);
     }
 
     private static String key(int i, int j) {
         return "" + i + "_" + j;
     }
 
-    private static void findLongestPath(char[][] grid, int i, int j, Set<String> seen, List<Integer> walkLengths) {
-        if (seen.contains(key(i, j))) {
-            //been here before
-            return;
-        }
-        seen.add(key(i, j));
-        if (i == grid.length - 1) {
-            walkLengths.add((seen.size() - 1));
-            System.out.println("Walk length " + (seen.size() - 1)); // deduct 1 as start position
-            // the end
-            //            printGrid(grid, seen);
-            return;
+    private static int findLongestPath(char[][] grid) {
+//        Set<String> seen = new HashSet<>();
+        //        seen.add(key(0, 1));
+        List<Integer> walkLengths = new ArrayList<>();
+
+        Deque<StackElement> stack = new LinkedList<>();
+        stack.add(new StackElement(0, 1, new HashSet<>())); // start position
+
+        while (!stack.isEmpty()) {
+            StackElement walk = stack.pollLast();
+            System.out.println(walk);
+            if (walk.seen.contains(key(walk.i, walk.j))) {
+                System.out.println("Been here before");
+                //been here before
+                continue;
+            }
+            walk.seen.add(key(walk.i, walk.j));
+            if (walk.i == grid.length - 1) {
+                walkLengths.add((walk.seen.size() - 1));
+                System.out.println("Walk length " + (walk.seen.size() - 1)); // deduct 1 as start position
+                // the end
+                //            printGrid(grid, seen);
+                continue;
+            }
+            int possibleDirections = countPossibleDirections(grid, walk.i, walk.j, walk.seen);
+
+            // here try walking in any direction
+            if (possibleDirections == 0) { //dead end
+                continue;
+            }
+            if (possibleDirections != 1) { // todo we have to clone seen set
+                            System.out.println("possible directions " + possibleDirections + " at [" + walk.i + "][" + walk.j + "]");
+            }
+
+            if (canGo(grid, walk.i - 1, walk.j, walk.seen) && (grid[walk.i][walk.j] == '.' || grid[walk.i][walk.j] == '^')) {
+                //            if (canGo(grid, walk.i - 1, walk.j, seen)) {
+                stack.add(new StackElement(walk.i - 1, walk.j, new HashSet<>(walk.seen)));
+            }
+            if (canGo(grid, walk.i + 1, walk.j, walk.seen) && (grid[walk.i][walk.j] == '.' || grid[walk.i][walk.j] == 'v')) {
+                //            if (canGo(grid, walk.i + 1, walk.j, seen)) {
+                stack.add(new StackElement(walk.i + 1, walk.j, new HashSet<>(walk.seen)));
+            }
+            if (canGo(grid, walk.i, walk.j - 1, walk.seen) && (grid[walk.i][walk.j] == '.' || grid[walk.i][walk.j] == '<')) {
+                //            if (canGo(grid, walk.i, walk.j - 1, seen)) {
+                stack.add(new StackElement(walk.i, walk.j - 1, new HashSet<>(walk.seen)));
+            }
+            if (canGo(grid, walk.i, walk.j + 1, walk.seen) && (grid[walk.i][walk.j] == '.' || grid[walk.i][walk.j] == '>')) {
+                //            if (canGo(grid, walk.i, walk.j + 1, seen)) {
+                stack.add(new StackElement(walk.i, walk.j + 1, new HashSet<>(walk.seen)));
+            }
         }
 
-        int possibleDirections = countPossibleDirections(grid, i, j, seen);
-
-        // here try walking in any direction
-        if (possibleDirections == 0) { //dead end
-            return;
-        }
-
-        if (possibleDirections != 1) { // todo we have to clone seen set
-            //            System.out.println("possible directions " + possibleDirections + " at [" + i + "][" + j + "]");
-        }
-
-        if (canGo(grid, i - 1, j, seen) && (grid[i][j] == '.' || grid[i][j] == '^')) {
-            findLongestPath(grid, i - 1, j, new HashSet<>(seen), walkLengths);
-        }
-        if (canGo(grid, i + 1, j, seen) && (grid[i][j] == '.' || grid[i][j] == 'v')) {
-            findLongestPath(grid, i + 1, j, new HashSet<>(seen), walkLengths);
-        }
-        if (canGo(grid, i, j - 1, seen) && (grid[i][j] == '.' || grid[i][j] == '<')) {
-            findLongestPath(grid, i, j - 1, new HashSet<>(seen), walkLengths);
-        }
-        if (canGo(grid, i, j + 1, seen) && (grid[i][j] == '.' || grid[i][j] == '>')) {
-            findLongestPath(grid, i, j + 1, new HashSet<>(seen), walkLengths);
-        }
-        return;
+        walkLengths.sort(Comparator.comparingInt(i -> i));
+        System.out.println(walkLengths);
+        return walkLengths.getLast();
     }
 
     private static int countPossibleDirections(char[][] grid, int i, int j, Set<String> seen) {
