@@ -51,4 +51,8 @@ public class Node {
     public void setEdges(List<Edge> edges) {
         this.edges = edges;
     }
+
+    public List<Edge> getEdges() {
+        return edges;
+    }
 }

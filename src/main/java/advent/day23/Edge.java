@@ -13,7 +13,7 @@ public class Edge {
     public String toString() {
         return "{ " +
             "\"length\": " + length + ", " +
-            "\"target\": " + target +
+            "\"target\": " + target.key() +
             " }";
     }
 }

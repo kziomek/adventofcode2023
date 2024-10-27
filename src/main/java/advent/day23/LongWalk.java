@@ -18,7 +18,7 @@ public class LongWalk {
     // todo build graph with nodes in intersections and edges lengths, then try to find longest path with memoization (intersection, remaining nodes)
     public static void main(String[] args) throws IOException {
 //        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/example.txt"));
-                                        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/my-input.txt"));
+                                                char[][] grid = Parser.parse(Path.of("src/main/resources/day23/my-input.txt"));
 
         printGrid(grid);
 
@@ -33,8 +33,15 @@ public class LongWalk {
         System.out.println(nodes);
 
         updateAdjacents(grid, nodes);
+        updateEdges(nodes);
 
         System.out.println(nodes);
+
+        traverseGraph(startNode, endNode, 0, 0, Set.of(startNode));
+
+
+
+
 
         // draw graph on paper
 
@@ -47,6 +54,37 @@ public class LongWalk {
         //        int maxWalkLength = findLongestPath(grid);
         //
         //        System.out.println("Max walk is " + maxWalkLength);
+    }
+
+    private static void updateEdges(Set<Node> nodes) {
+        Map<String,Node> map = new HashMap<>();
+        for (Node node : nodes) {
+            map.put(node.key(), node);
+        }
+
+        for (Node node : nodes) {
+            List<Edge> updatedEdge = new ArrayList<>();
+            for (Edge edge : node.getEdges()) {
+                updatedEdge.add(new Edge(edge.length, map.get(edge.target.key())));
+            }
+            node.setEdges(updatedEdge);
+        }
+    }
+
+    private static void traverseGraph(Node node, Node endNode, int depth, int length, Set<Node> seenSoFar) {
+        System.out.println("depth "+ depth + " node " + node.key());
+        if (node.key().equals(endNode.key())) {
+            System.out.println("Length " + length);
+            return;
+        }
+
+        for (Edge edge : node.getEdges()) {
+            if (!seenSoFar.contains(edge.target)) {
+                Set<Node> seen = new HashSet<>(seenSoFar);
+                seen.add(edge.target);
+                traverseGraph(edge.target, endNode, depth + 1, length + edge.length, seen);
+            }
+        }
     }
 
     private static void updateAdjacents(char[][] grid, Set<Node> nodes) {
