@@ -2,23 +2,16 @@ package advent.day23;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 // TODO stack overflow -> refactor solution to use queue or optimize sets
 public class LongWalk {
 
     // todo build graph with nodes in intersections and edges lengths, then try to find longest path with memoization (intersection, remaining nodes)
     public static void main(String[] args) throws IOException {
-//        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/example.txt"));
-                                                char[][] grid = Parser.parse(Path.of("src/main/resources/day23/my-input.txt"));
+//                char[][] grid = Parser.parse(Path.of("src/main/resources/day23/example.txt"));
+        char[][] grid = Parser.parse(Path.of("src/main/resources/day23/my-input.txt"));
 
         printGrid(grid);
 
@@ -37,27 +30,79 @@ public class LongWalk {
 
         System.out.println(nodes);
 
-        traverseGraph(startNode, endNode, 0, 0, Set.of(startNode));
+        Set<Node> remainingNodnes = new HashSet<>(nodes);
+        remainingNodnes.remove(startNode);
+        int maxPath = findMaxPath(startNode, endNode, remainingNodnes, new HashMap<>(), 0);
+        System.out.println("Max path " + maxPath);
 
+        //        traverseGraph(startNode, endNode, 0, 0, Set.of(startNode));
 
+    }
 
+    private static int findMaxPath(Node node, Node endNode, Set<Node> remainingNodes, Map<String, Integer> maxPaths, int depth) {
+        String key = key(node, remainingNodes);
+        if (maxPaths.containsKey(key)) {
+            System.out.println("Hit! " + depth);
+            return maxPaths.get(key);
+        }
 
+        // TODO consider if end node can't reach 2 remaining then stop this path with 0
+        if (!valid(endNode, remainingNodes)) {
+            System.out.println("not likely valid");
+            maxPaths.put(key, 0);
+            return 0;
+        }
+        ;
 
-        // draw graph on paper
+        int maxPath = 0;
+        for (Edge edge : node.getEdges()) {
+            if (!remainingNodes.contains(edge.target)) {
+                continue;
+            }
+            Set<Node> newRemainingNodes = new HashSet<>(remainingNodes);
+            newRemainingNodes.remove(edge.target);
+            int length = edge.length + findMaxPath(edge.target, endNode, newRemainingNodes, maxPaths, depth + 1);
+            if (length > maxPath) {
+                maxPath = length;
+            }
+        }
+        maxPaths.put(key, maxPath);
+        return maxPath;
+    }
 
-        // TODO start from start and traverse with BSF
+    private static boolean valid(Node endNode, Set<Node> remainingNodes) {
+        int remainingSize = remainingNodes.size();
+        int counter = 0;
 
-        //        int intersections = countIntersections(grid);
-        //        System.out.println("Intersections " + intersections);
-        //        System.exit(0);
-        //
-        //        int maxWalkLength = findLongestPath(grid);
-        //
-        //        System.out.println("Max walk is " + maxWalkLength);
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(endNode);
+
+        Set<Node> seen = new HashSet<>();
+
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            if (seen.contains(node)) {
+                continue;
+            }
+            seen.add(node);
+            counter++;
+            for (Edge edge : node.getEdges()) {
+                if (remainingNodes.contains(edge.target)) {
+                    queue.add(edge.target);
+                }
+            }
+        }
+        return remainingSize - counter <= 1;
+    }
+
+    private static String key(Node node, Set<Node> nodes) {
+        String key = node.key() + " " + nodes.stream().map(Node::key).sorted().collect(Collectors.joining(","));
+                System.out.println("set key " + key);
+        return key;
     }
 
     private static void updateEdges(Set<Node> nodes) {
-        Map<String,Node> map = new HashMap<>();
+        Map<String, Node> map = new HashMap<>();
         for (Node node : nodes) {
             map.put(node.key(), node);
         }
@@ -72,11 +117,13 @@ public class LongWalk {
     }
 
     private static void traverseGraph(Node node, Node endNode, int depth, int length, Set<Node> seenSoFar) {
-        System.out.println("depth "+ depth + " node " + node.key());
+        System.out.println("depth " + depth + " node " + node.key());
         if (node.key().equals(endNode.key())) {
             System.out.println("Length " + length);
             return;
         }
+
+        // if endNode can't reach
 
         for (Edge edge : node.getEdges()) {
             if (!seenSoFar.contains(edge.target)) {

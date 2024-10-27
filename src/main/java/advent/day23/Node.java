@@ -19,7 +19,10 @@ public class Node {
     }
 
     public String key() {
-        return i + " " + j;
+        String paddedI = String.format("%0" + 3 + "d", i);
+        String paddedJ = String.format("%0" + 3 + "d", j);
+
+        return paddedI + " " + paddedJ;
     }
 
     @Override
