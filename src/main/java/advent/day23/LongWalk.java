@@ -5,8 +5,20 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-// TODO stack overflow -> refactor solution to use queue or optimize sets
+/*
+   Initial versions for part 2 had stack overflow and memory issues
+
+   Performance improvement to findMaxPath method is to extract remainingNodes set as global variable and backtrack it before and after calling findMaxPath
+
+   Memoization cost seems to exceed gains.
+
+   Optimisation to stop early when path is not very likely because it already omitted more than one point. Path should not need to omit 2 points.
+
+ */
 public class LongWalk {
+
+    // It's significant performance improvement to use global set for tracking instead of copying it every time when invoking recursive method.
+    private static final Set<Node> remainingNodes = new HashSet<>();
 
     // todo build graph with nodes in intersections and edges lengths, then try to find longest path with memoization (intersection, remaining nodes)
     public static void main(String[] args) throws IOException {
@@ -30,47 +42,46 @@ public class LongWalk {
 
         System.out.println(nodes);
 
-        Set<Node> remainingNodnes = new HashSet<>(nodes);
-        remainingNodnes.remove(startNode);
-        int maxPath = findMaxPath(startNode, endNode, remainingNodnes, new HashMap<>(), 0);
+        remainingNodes.addAll(nodes);
+        remainingNodes.remove(startNode);
+        int maxPath = findMaxPath(startNode, endNode, new HashMap<>(), 0);
         System.out.println("Max path " + maxPath);
 
         //        traverseGraph(startNode, endNode, 0, 0, Set.of(startNode));
 
     }
 
-    private static int findMaxPath(Node node, Node endNode, Set<Node> remainingNodes, Map<String, Integer> maxPaths, int depth) {
-        String key = key(node, remainingNodes);
-        if (maxPaths.containsKey(key)) {
-            System.out.println("Hit! " + depth);
-            return maxPaths.get(key);
-        }
+    private static int findMaxPath(Node node, Node endNode, Map<String, Integer> maxPaths, int depth) {
+//        String key = key(node, remainingNodes);
+//        if (maxPaths.containsKey(key)) {
+////            System.out.println("Hit! " + depth);
+//            return maxPaths.get(key);
+//        }
 
         // TODO consider if end node can't reach 2 remaining then stop this path with 0
-        if (!valid(endNode, remainingNodes)) {
-            System.out.println("not likely valid");
-            maxPaths.put(key, 0);
+        if (!isValid(endNode)) {
+//            System.out.println("not likely valid");
+//            maxPaths.put(key, 0);
             return 0;
         }
-        ;
 
         int maxPath = 0;
         for (Edge edge : node.getEdges()) {
             if (!remainingNodes.contains(edge.target)) {
                 continue;
             }
-            Set<Node> newRemainingNodes = new HashSet<>(remainingNodes);
-            newRemainingNodes.remove(edge.target);
-            int length = edge.length + findMaxPath(edge.target, endNode, newRemainingNodes, maxPaths, depth + 1);
+            remainingNodes.remove(edge.target);
+            int length = edge.length + findMaxPath(edge.target, endNode, maxPaths, depth + 1);
+            remainingNodes.add(edge.target);
             if (length > maxPath) {
                 maxPath = length;
             }
         }
-        maxPaths.put(key, maxPath);
+//        maxPaths.put(key, maxPath);
         return maxPath;
     }
 
-    private static boolean valid(Node endNode, Set<Node> remainingNodes) {
+    private static boolean isValid(Node endNode) {
         int remainingSize = remainingNodes.size();
         int counter = 0;
 
@@ -97,7 +108,7 @@ public class LongWalk {
 
     private static String key(Node node, Set<Node> nodes) {
         String key = node.key() + " " + nodes.stream().map(Node::key).sorted().collect(Collectors.joining(","));
-                System.out.println("set key " + key);
+//                System.out.println("set key " + key);
         return key;
     }
 
