@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
    Optimisation to stop early when path is not very likely because it already omitted more than one point. Path should not need to omit 2 points.
 
+   Code is huge of mess after trying a few different things, but I'm not trying to make it pretty anymore so leaving it this way.
+
  */
 public class LongWalk {
 
