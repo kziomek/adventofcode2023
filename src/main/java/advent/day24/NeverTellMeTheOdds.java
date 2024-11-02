@@ -1,9 +1,6 @@
 package advent.day24;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 
 public class NeverTellMeTheOdds {
@@ -18,9 +15,9 @@ public class NeverTellMeTheOdds {
 
     public static void main(String[] args) throws IOException {
 
-        //        List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
+        List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
         //                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
-        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
+        //        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
 
         for (Input line : lines) {
 
@@ -63,104 +60,84 @@ public class NeverTellMeTheOdds {
 
     private static void part2(List<Input> lines) {
         Input line0 = lines.get(0);
-        //        Input line1 = lines.get(1);
 
-        for (int v = -1 * N; v < N; v++) {
-            for (int t = 0; t < N; t++) {
-                long x = line0.px + t * (line0.vx - v);
-                System.out.println("x=" + x + " vx=" + v + " t=" + t);
-                if (validateLines(lines, v, x)) {
-                    System.out.println("x=" + x + " vx=" + v + " t=" + t);
+        for (int v = -3; v < -2; v++) {
+            System.out.println();
+            for (int t = 5; t < 6; t++) {
+                long xr = line0.px + t * (line0.vx - v);
+                if (validateLinesX(lines, v, xr)) {
+                    System.out.println("xr=" + xr + " vx=" + v + " t=" + t);
+                    System.out.println();
                 }
             }
         }
 
-        //        for (int v = -1 * N; v < N; v++) {
-        //            for (int t = 0; t < N; t++) {
-        //                long y = line0.py + t * (line0.vy - v);
-        //                //                                System.out.println("y=" + y + " vy=" + v + " t=" + t);
-        //                if (validateLineY(lines, v, y)) {
-        //                    System.out.println("y=" + y + " vy=" + v + " t=" + t);
-        //                }
-        //            }
-        //        }
+        for (int v = 1; v < 2; v++) {
+            for (int t = 5; t < 6; t++) {
+                long yr = line0.py + t * (line0.vy - v);
+                if (validateLineY(lines, v, yr)) {
+                    System.out.println("yr=" + yr + " vy=" + v + " t=" + t);
+                    System.out.println();
+                }
+            }
+        }
         //
-        //        for (int v = -1 * N; v < N; v++) {
-        //            for (int t = 0; t < N; t++) {
-        //                long z = line0.pz + t * (line0.vz - v);
-        //                //                                System.out.println("z=" + z + " vz=" + v + " t=" + t);
-        //                if (validateLineZ(lines, v, z)) {
-        //                    System.out.println("z=" + z + " vz=" + v + " t=" + t);
-        //                }
-        //            }
-        //        }
+        for (int v = 2; v < 3; v++) {
+            for (int t = 5; t < 6; t++) {
+                long zr = line0.pz + t * (line0.vz - v);
+                if (validateLineZ(lines, v, zr)) {
+                    System.out.println("zr=" + zr + " vz=" + v + " t=" + t);
+                    System.out.println();
+                }
+            }
+        }
     }
 
-    private static boolean validateLines(List<Input> lines, int v, long ox) {
-        for (Input line : lines) {
-            if (!valid(line, v, ox)) {
+    private static boolean validateLinesX(List<Input> lines, int v, long ox) {
+        for (int i = 1; i < lines.size(); i++) {
+            if (!validX(lines.get(i), v, ox)) {
                 return false;
             }
         }
+
         return true;
     }
 
-    private static boolean valid(Input line, int v, long ox) {
-        boolean valid = false;
-        for (int t = 1; t < N; t++) {
-            long x = line.px + t * (line.vx - v);
-            System.out.println("  " + line + "  x=" + x + " vx=" + v + " t=" + t);
-            if (x == ox) {
-                valid = true;
-                //                System.out.println("t= " + t);
-                break;
-            }
-        }
-        return valid;
+    private static boolean validX(Input line, int vr, long xr) {
+        double t = (double) (xr - line.px) / (line.vx - vr);
+        System.out.println("valid t " + t);
+        return t % 1 == 0;
     }
 
     private static boolean validateLineY(List<Input> lines, int v, long oy) {
-        for (Input line : lines) {
-            if (!validY(line, v, oy)) {
+        for (int i = 1; i < lines.size(); i++) {
+            if (!validY(lines.get(i), v, oy)) {
                 return false;
             }
         }
+
         return true;
     }
 
-    private static boolean validY(Input line, int v, long oy) {
-        boolean valid = false;
-        for (int t = 1; t < N; t++) {
-            long y = line.py + t * (line.vy - v);
-            if (y == oy) {
-                valid = true;
-                //                System.out.println("t= " + t);
-                break;
-            }
-        }
-        return valid;
+    private static boolean validY(Input line, int vr, long yr) {
+        double t = (double) (yr - line.py) / (line.vy - vr);
+        System.out.println("valid t " + t);
+        return t % 1 == 0;
     }
 
     private static boolean validateLineZ(List<Input> lines, int v, long oz) {
-        for (Input line : lines) {
-            if (!validZ(line, v, oz)) {
+        for (int i = 1; i < lines.size(); i++) {
+            if (!validZ(lines.get(i), v, oz)) {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean validZ(Input line, int v, long oz) {
-        boolean valid = false;
-        for (int t = 1; t < N; t++) {
-            long z = line.pz + t * (line.vz - v);
-            if (z == oz) {
-                valid = true;
-                //                System.out.println("t= " + t);
-                break;
-            }
-        }
-        return valid;
+    private static boolean validZ(Input line, int vr, long zr) {
+        double t = (double) (zr - line.pz) / (line.vz - vr);
+        System.out.println("valid t " + t);
+        return t % 1 == 0;
     }
 
     private static Intersection intersect(Input line1, Input line2) {
