@@ -8,16 +8,20 @@ import java.util.List;
 
 public class NeverTellMeTheOdds {
 
-//    static final BigDecimal MIN = new BigDecimal(7);
-    static final BigDecimal MIN = new BigDecimal(200000000000000L);
-//    static final BigDecimal MAX = new BigDecimal(25);
-    static final BigDecimal MAX = new BigDecimal(400000000000000L);
+    static final BigDecimal MIN = new BigDecimal(7);
+    //    static final BigDecimal MIN = new BigDecimal(200000000000000L);
+    static final BigDecimal MAX = new BigDecimal(25);
+    //    static final BigDecimal MAX = new BigDecimal(400000000000000L);
 
     public static void main(String[] args) throws IOException {
 
-//        List<Input> inputs = Parser.parse("src/main/resources/day24/example.txt");
-        List<Input> inputs = Parser.parse("src/main/resources/day24/my-input.txt");
+        List<Input> inputs = Parser.parse("src/main/resources/day24/example.txt");
+        //        List<Input> inputs = Parser.parse("src/main/resources/day24/my-input.txt");
         List<Line> lines = toLines(inputs);
+
+        for (Line line : lines) {
+            System.out.println("y=" + line.a + "x + " + line.b);
+        }
 
         List<Intersection> validIntersections = new ArrayList<>();
         for (int i = 0; i < lines.size(); i++) {
