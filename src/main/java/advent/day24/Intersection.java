@@ -3,9 +3,9 @@ package advent.day24;
 import java.math.BigDecimal;
 
 public class Intersection {
-    BigDecimal x, y;
+    double x, y;
 
-    public Intersection(BigDecimal x, BigDecimal y) {
+    public Intersection(double x, double y) {
         this.x = x;
         this.y = y;
     }

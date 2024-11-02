@@ -12,6 +12,14 @@ public class Input {
         this.vz = Long.parseLong(input[5]);
     }
 
+    double a() {
+        return (double) vy / vx;
+    }
+
+    double b() {
+        return py - a() * px;
+    }
+
     @Override
     public String toString() {
         return "Input{" +
@@ -21,6 +29,8 @@ public class Input {
             ", vx=" + vx +
             ", vy=" + vy +
             ", vz=" + vz +
+            ", a=" + a() +
+            ", b=" + b() +
             '}';
     }
 }
