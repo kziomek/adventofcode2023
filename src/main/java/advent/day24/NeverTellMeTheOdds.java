@@ -17,14 +17,14 @@ public class NeverTellMeTheOdds {
     static final long MIN = 200000000000000L;
     static final long MAX = 400000000000000L;
 
-    private static final int N = 10;
+    private static final int N = 1000;
 
     // TODO collect result with example, then check with my input
     public static void main(String[] args) throws IOException {
 
         List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
-//                                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
-//                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
+//                                                List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
+        //                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
 
         for (Input line : lines) {
 
@@ -68,54 +68,103 @@ public class NeverTellMeTheOdds {
 
     private static void part2c(List<Input> lines) {
 
-        for (int vrx = -1 * N; vrx < N; vrx++) {
-            for (int vry = -1 * N; vry < N; vry++) {
-                for (int vrz = -1 * N; vrz < N; vrz++) {
+        System.out.println("XY");
+        for (int vrx = -3; vrx < -2; vrx++) {
+            for (int vry = 1; vry < 2; vry++) {
 
-                    Set<String> intersections = new HashSet<>();
-                    int failureCounter = 0;
-                    for (int i = 0; i < lines.size(); i++) {
-                        for (int j = i + 1; j < lines.size(); j++) {
-                            Input line0 = lines.get(i);
-                            Input line1 = lines.get(j);
+                Set<String> intersections = new HashSet<>();
+                int counter = 0;
+                int matchCounter = 0;
+                for (int i = 0; i < lines.size(); i++) {
+                    for (int j = i + 1; j < lines.size(); j++) {
+                        counter++;
+                        Input line0 = lines.get(i);
+                        Input line1 = lines.get(j);
 
-                            LineAbc pxy0 = new LineAbc(line0.px, line0.py, line0.vx, line0.vy, vrx, vry);
-                            LineAbc pxy1 = new LineAbc(line1.px, line1.py, line1.vx, line1.vy, vrx, vry);
-                            Intersection intersectXY = intersect(pxy0, pxy1);
-                            if (intersectXY == null) {
-                                failureCounter++;
-                                continue;
-                            }
-                            //                }
-
-                            LineAbc pxz0 = new LineAbc(line0.px, line0.pz, line0.vx, line0.vz, vrx, vrz);
-                            LineAbc pxz1 = new LineAbc(line1.px, line1.pz, line1.vx, line1.vz, vrx, vrz);
-                            Intersection intersectXZ = intersect(pxz0, pxz1);
-                            if (intersectXZ == null) {
-                                failureCounter++;
-                                continue;
-                            }
-
-                            LineAbc pyz0 = new LineAbc(line0.py, line0.pz, line0.vy, line0.vz, vry, vrz);
-                            LineAbc pyz1 = new LineAbc(line1.py, line1.pz, line1.vy, line1.vz, vry, vrz);
-                            Intersection intersectYZ = intersect(pyz0, pyz1);
-                            if (intersectYZ == null) {
-                                failureCounter++;
-                                continue;
-                            }
-
-                            if (intersectXY.x == intersectXZ.x && intersectXY.y == intersectYZ.x && intersectXZ.y == intersectYZ.y) {
-                                String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y + " z=" + intersectXZ.y;
-                                intersections.add(sIntersection);
-                            } else {
-                                failureCounter++;
-                            }
+                        LineAbc pxy0 = new LineAbc(line0.px, line0.py, line0.vx, line0.vy, vrx, vry);
+                        LineAbc pxy1 = new LineAbc(line1.px, line1.py, line1.vx, line1.vy, vrx, vry);
+                        Intersection intersectXY = intersect(pxy0, pxy1);
+                        if (intersectXY != null) {
+                            matchCounter++;
+                            String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y;
+                            intersections.add(sIntersection);
+                            System.out.println(intersectXY);
                         }
                     }
+                }
 
-                    if (intersections.size() == 1 && failureCounter < 9) {
-                        System.out.println("Intersected all lines with failureCounter " + failureCounter + " here " + intersections.stream().findFirst().get());
+                if (intersections.size() == 1) {
+                    System.out.println("Intersected all lines with matchCounter " + matchCounter + "/" + counter + "  here " + intersections.stream().findFirst().get());
+                }
+            }
+        }
+
+        System.out.println("XZ");
+        for (int vrx = -3; vrx < -2; vrx++) {
+            for (int vrz = 2; vrz < 3; vrz++) {
+
+                Set<String> intersections = new HashSet<>();
+                int counter = 0;
+                int matchCounter = 0;
+                for (int i = 0; i < lines.size(); i++) {
+                    for (int j = i + 1; j < lines.size(); j++) {
+                        counter++;
+                        Input line0 = lines.get(i);
+                        Input line1 = lines.get(j);
+
+                        LineAbc pxz0 = new LineAbc(line0.px, line0.pz, line0.vx, line0.vz, vrx, vrz);
+                        LineAbc pxz1 = new LineAbc(line1.px, line1.pz, line1.vx, line1.vz, vrx, vrz);
+                        Intersection intersectXZ = intersect(pxz0, pxz1);
+                        if (intersectXZ != null) {
+                            matchCounter++;
+                            String sIntersection = "Intersected x=" + intersectXZ.x + " z=" + intersectXZ.y;
+                            intersections.add(sIntersection);
+                            System.out.println(intersectXZ);
+                        }
+
+                        //                            if (intersectXY.x == intersectXZ.x && intersectXY.y == intersectYZ.x && intersectXZ.y == intersectYZ.y) {
+                        //                                String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y + " z=" + intersectXZ.y;
+                        //                                intersections.add(sIntersection);
+                        //                            } else {
+                        //                                failureCounter++;
+                        //                            }
                     }
+                }
+
+                if (intersections.size() == 1) {
+                    System.out.println("Intersected all lines with matchCounter " + matchCounter + "/" + counter + "  here " + intersections.stream().findFirst().get());
+                }
+            }
+        }
+
+        System.out.println("YZ");
+        for (int vry = 1; vry < 2; vry++) {
+            for (int vrz = 2; vrz < 3; vrz++) {
+
+                Set<String> intersections = new HashSet<>();
+                int counter = 0;
+                int matchCounter = 0;
+                for (int i = 0; i < lines.size(); i++) {
+                    for (int j = i + 1; j < lines.size(); j++) {
+                        counter++;
+                        Input line0 = lines.get(i);
+                        Input line1 = lines.get(j);
+
+                        LineAbc pyz0 = new LineAbc(line0.py, line0.pz, line0.vy, line0.vz, vry, vrz);
+                        LineAbc pyz1 = new LineAbc(line1.py, line1.pz, line1.vy, line1.vz, vry, vrz);
+                        Intersection intersectYZ = intersect(pyz0, pyz1);
+                        if (intersectYZ != null) {
+                            matchCounter++;
+                            String sIntersection = "Intersected x=" + intersectYZ.x + " z=" + intersectYZ.y;
+                            intersections.add(sIntersection);
+                            System.out.println(intersectYZ);
+                        }
+
+                    }
+                }
+
+                if (intersections.size() == 1) {
+                    System.out.println("Intersected all lines with matchCounter " + matchCounter + "/" + counter + "  here " + intersections.stream().findFirst().get());
                 }
             }
         }
