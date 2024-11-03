@@ -88,7 +88,7 @@ public class NeverTellMeTheOdds {
                             matchCounter++;
                             String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y;
                             intersections.add(sIntersection);
-                            System.out.println(intersectXY);
+//                            System.out.println(intersectXY);
                         }
                     }
                 }
@@ -119,15 +119,8 @@ public class NeverTellMeTheOdds {
                             matchCounter++;
                             String sIntersection = "Intersected x=" + intersectXZ.x + " z=" + intersectXZ.y;
                             intersections.add(sIntersection);
-                            System.out.println(intersectXZ);
+//                            System.out.println(intersectXZ);
                         }
-
-                        //                            if (intersectXY.x == intersectXZ.x && intersectXY.y == intersectYZ.x && intersectXZ.y == intersectYZ.y) {
-                        //                                String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y + " z=" + intersectXZ.y;
-                        //                                intersections.add(sIntersection);
-                        //                            } else {
-                        //                                failureCounter++;
-                        //                            }
                     }
                 }
 
@@ -157,7 +150,7 @@ public class NeverTellMeTheOdds {
                             matchCounter++;
                             String sIntersection = "Intersected x=" + intersectYZ.x + " z=" + intersectYZ.y;
                             intersections.add(sIntersection);
-                            System.out.println(intersectYZ);
+//                            System.out.println(intersectYZ);
                         }
 
                     }
