@@ -73,17 +73,24 @@ public class NeverTellMeTheOdds {
                 for (int vrz = 2; vrz < 3; vrz++) {
 
                     Set<String> intersections = new HashSet<>();
+                    //                    boolean allIntersected = true;
+                    int failureCounter = 0;
                     for (int i = 0; i < lines.size(); i++) {
                         for (int j = i + 1; j < lines.size(); j++) {
                             Input line0 = lines.get(i);
                             Input line1 = lines.get(j);
+                            System.out.println(line0);
+                            System.out.println(line1);
 
                             LineAbc pxy0 = new LineAbc(line0.px, line0.py, line0.vx, line0.vy, vrx, vry);
                             LineAbc pxy1 = new LineAbc(line1.px, line1.py, line1.vx, line1.vy, vrx, vry);
                             Intersection intersectXY = intersect(pxy0, pxy1);
                             //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-//                            System.out.println(intersectXY);
+                            //                            System.out.println(intersectXY);
                             if (intersectXY == null) {
+                                System.out.println("Not allIntersected XY");
+                                failureCounter++;
+                                //                                allIntersected = false;
                                 continue;
                             }
                             //                }
@@ -92,8 +99,11 @@ public class NeverTellMeTheOdds {
                             LineAbc pxz1 = new LineAbc(line1.px, line1.pz, line1.vx, line1.vz, vrx, vrz);
                             Intersection intersectXZ = intersect(pxz0, pxz1);
                             //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-//                            System.out.println(intersectXZ);
+                            //                            System.out.println(intersectXZ);
                             if (intersectXZ == null) {
+                                System.out.println("Not allIntersected XZ");
+                                failureCounter++;
+                                //                                allIntersected = false;
                                 continue;
                             }
 
@@ -101,21 +111,39 @@ public class NeverTellMeTheOdds {
                             LineAbc pyz1 = new LineAbc(line1.py, line1.pz, line1.vy, line1.vz, vry, vrz);
                             Intersection intersectYZ = intersect(pyz0, pyz1);
                             //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-//                            System.out.println(intersectYZ);
+                            //                            System.out.println(intersectYZ);
                             if (intersectYZ == null) {
+                                System.out.println("Not allIntersected YZ");
+                                failureCounter++;
+                                //                                allIntersected = false;
                                 continue;
                             }
 
+                            //                            int tests = 0;
+                            //                            if (intersectXY.x == intersectXZ.x) {
+                            //                                tests++;
+                            //                            }
+                            //                            if (intersectXY.y == intersectYZ.x) {
+                            //                                tests++;
+                            //                            }
+                            //                            if (intersectXZ.y == intersectYZ.y) {
+                            //                                tests++;
+                            //                            }
+
                             if (intersectXY.x == intersectXZ.x && intersectXY.y == intersectYZ.x && intersectXZ.y == intersectYZ.y) {
-                                String sIntersection = "Intersected x= " + intersectXY.x + " y= " + intersectXY.y + " z=" + intersectXZ.y;
+                                String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y + " z=" + intersectXZ.y;
                                 System.out.println(sIntersection);
                                 intersections.add(sIntersection);
+                            } else {
+                                System.out.println("Not allIntersected ");
+                                failureCounter++;
+                                //                                allIntersected = false;
                             }
                         }
                     }
 
                     if (intersections.size() == 1) {
-                        System.out.println("Intersected all lines here " + intersections.stream().findFirst().get());
+                        System.out.println("Intersected all lines with failureCounter " + failureCounter + " here " + intersections.stream().findFirst().get());
                     }
                 }
             }

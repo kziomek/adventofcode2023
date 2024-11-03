@@ -8,4 +8,8 @@ public class LineAbc {
         b = vx - vrx;
         c = -1 * (a * px + b * py);
     }
+
+    public boolean pointOnLine(long x, long y) {
+        return a * x + b * y + c == 0;
+    }
 }
