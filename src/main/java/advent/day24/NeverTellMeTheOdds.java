@@ -119,30 +119,6 @@ public class NeverTellMeTheOdds {
                 }
             }
         }
-
-        //        for (int vrx = -3; vrx < -2; vrx++) {
-        //            for (int vrz = 2; vrz < 3; vrz++) {
-        //                LineAbc p0 = new LineAbc(line0.px, line0.pz, line0.vx, line0.vz, vrx, vrz);
-        //                LineAbc p1 = new LineAbc(line1.px, line1.pz, line1.vx, line1.vz, vrx, vrz);
-        //                Intersection intersect = intersect(p0, p1);
-        //                //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-        //                System.out.println(intersect);
-        //                //                }
-        //
-        //            }
-        //        }
-        //
-        //        for (int vry = 1; vry < 2; vry++) {
-        //            for (int vrz = 2; vrz < 3; vrz++) {
-        //                LineAbc p0 = new LineAbc(line0.py, line0.pz, line0.vy, line0.vz, vry, vrz);
-        //                LineAbc p1 = new LineAbc(line1.py, line1.pz, line1.vy, line1.vz, vry, vrz);
-        //                Intersection intersect = intersect(p0, p1);
-        //                //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-        //                System.out.println(intersect);
-        //                //                }
-        //
-        //            }
-        //        }
     }
 
     private static void part2b(List<Input> lines) {
