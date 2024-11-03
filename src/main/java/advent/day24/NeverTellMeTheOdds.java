@@ -17,14 +17,15 @@ public class NeverTellMeTheOdds {
     static final long MIN = 200000000000000L;
     static final long MAX = 400000000000000L;
 
-    private static final int N = 1000;
+    private static final int N = 400;
 
     // TODO collect result with example, then check with my input
     public static void main(String[] args) throws IOException {
+        System.out.println(187016878804004L + 175507140888229L + 177831791810924L); // this numbers are found at intersection of 5 first lines from following calculation
 
-        List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
-//                                                List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
-//                                List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
+        //        List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
+        //                                                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
+        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
 
         for (Input line : lines) {
 
@@ -69,8 +70,8 @@ public class NeverTellMeTheOdds {
     private static void part2c(List<Input> lines) {
 
         System.out.println("XY");
-        for (int vrx = -3; vrx < -2; vrx++) {
-            for (int vry = 1; vry < 2; vry++) {
+        for (int vrx = -1 * N; vrx < N; vrx++) {
+            for (int vry = -1 * N; vry < N; vry++) {
 
                 Set<String> intersections = new HashSet<>();
                 int counter = 0;
@@ -88,7 +89,7 @@ public class NeverTellMeTheOdds {
                             matchCounter++;
                             String sIntersection = "Intersected x=" + intersectXY.x + " y=" + intersectXY.y;
                             intersections.add(sIntersection);
-//                            System.out.println(intersectXY);
+                            //                            System.out.println(intersectXY);
                         }
                     }
                 }
@@ -100,8 +101,8 @@ public class NeverTellMeTheOdds {
         }
 
         System.out.println("XZ");
-        for (int vrx = -3; vrx < -2; vrx++) {
-            for (int vrz = 2; vrz < 3; vrz++) {
+        for (int vrx = -1 * N; vrx < N; vrx++) {
+            for (int vrz = -1 * N; vrz < N; vrz++) {
 
                 Set<String> intersections = new HashSet<>();
                 int counter = 0;
@@ -119,7 +120,7 @@ public class NeverTellMeTheOdds {
                             matchCounter++;
                             String sIntersection = "Intersected x=" + intersectXZ.x + " z=" + intersectXZ.y;
                             intersections.add(sIntersection);
-//                            System.out.println(intersectXZ);
+                            //                            System.out.println(intersectXZ);
                         }
                     }
                 }
@@ -131,8 +132,8 @@ public class NeverTellMeTheOdds {
         }
 
         System.out.println("YZ");
-        for (int vry = 1; vry < 2; vry++) {
-            for (int vrz = 2; vrz < 3; vrz++) {
+        for (int vry = -1 * N; vry < N; vry++) {
+            for (int vrz = -1 * N; vrz < N; vrz++) {
 
                 Set<String> intersections = new HashSet<>();
                 int counter = 0;
@@ -150,9 +151,8 @@ public class NeverTellMeTheOdds {
                             matchCounter++;
                             String sIntersection = "Intersected x=" + intersectYZ.x + " z=" + intersectYZ.y;
                             intersections.add(sIntersection);
-//                            System.out.println(intersectYZ);
+                            //                            System.out.println(intersectYZ);
                         }
-
                     }
                 }
 
@@ -293,52 +293,54 @@ public class NeverTellMeTheOdds {
         //        return t % 1 == 0;
     }
 
-//    private static Intersection intersect(Input line1, Input line2) {
-//        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
-//        double y1 = line1.a() * x + line1.b();
-//        double y2 = line2.a() * x + line2.b();
-//        return new Intersection(x, y1);
-//    }
-//
-//    private static Intersection intersect(ProjectedInput line1, ProjectedInput line2) {
-//        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
-//        double y1 = line1.a() * x + line1.b();
-//        double y2 = line2.a() * x + line2.b();
-//        return new Intersection(x, y1);
-//    }
-
+    //    private static Intersection intersect(Input line1, Input line2) {
+    //        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
+    //        double y1 = line1.a() * x + line1.b();
+    //        double y2 = line2.a() * x + line2.b();
+    //        return new Intersection(x, y1);
+    //    }
+    //
+    //    private static Intersection intersect(ProjectedInput line1, ProjectedInput line2) {
+    //        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
+    //        double y1 = line1.a() * x + line1.b();
+    //        double y2 = line2.a() * x + line2.b();
+    //        return new Intersection(x, y1);
+    //    }
 
     private static Intersection intersect(LineAbc line1, LineAbc line2) {
-        long d = line2.b * line1.a - line1.b * line2.a;
-        if (d == 0) {
+        BigDecimal d = line2.b.multiply(line1.a).subtract(line1.b.multiply(line2.a));
+
+        //        long d = line2.b * line1.a - line1.b * line2.a;
+        if (d.compareTo(BigDecimal.ZERO) == 0) {
             return null;
         }
-        BigDecimal x = BigDecimal.valueOf (line1.b * line2.c - line2.b * line1.c).divide(BigDecimal.valueOf(d), 3, RoundingMode.HALF_UP);
-        BigDecimal y = BigDecimal.valueOf (line1.c * line2.a - line2.c * line1.a).divide(BigDecimal.valueOf(d), 3, RoundingMode.HALF_UP);
+
+        BigDecimal x = line1.b.multiply(line2.c).subtract(line2.b.multiply(line1.c)).divide(d, 3, RoundingMode.HALF_UP);
+        BigDecimal y = line1.c.multiply(line2.a).subtract(line2.c.multiply(line1.a)).divide(d, 3, RoundingMode.HALF_UP);
+
         return new Intersection(x, y);
     }
 
-
-//    private static Intersection intersect(LineAbc line1, LineAbc line2) {
-//        long d = line2.b * line1.a - line1.b * line2.a;
-//        if (d == 0) {
-//            return null;
-//        }
-//        double x = (double) (line1.b * line2.c - line2.b * line1.c) / d;
-//        double y = (double) (line1.c * line2.a - line2.c * line1.a) / d;
-//        return new Intersection(x, y);
-//    }
+    //    private static Intersection intersect(LineAbc line1, LineAbc line2) {
+    //        long d = line2.b * line1.a - line1.b * line2.a;
+    //        if (d == 0) {
+    //            return null;
+    //        }
+    //        double x = (double) (line1.b * line2.c - line2.b * line1.c) / d;
+    //        double y = (double) (line1.c * line2.a - line2.c * line1.a) / d;
+    //        return new Intersection(x, y);
+    //    }
 
     private static boolean isParallel(Input line1, Input line2) {
         return line1.a() == line2.a();
     }
 
-//    private static boolean isInCrossArea(Intersection intersection) {
-//        return (intersection.x >= MIN && intersection.x <= MAX
-//            && intersection.y >= MIN && intersection.y <= MAX);
-//    }
+    //    private static boolean isInCrossArea(Intersection intersection) {
+    //        return (intersection.x >= MIN && intersection.x <= MAX
+    //            && intersection.y >= MIN && intersection.y <= MAX);
+    //    }
 
-//    private static boolean isFutureIntersection(Intersection intersection, Input line) {
-//        return (intersection.x - line.px) / line.vx >= 0;
-//    }
+    //    private static boolean isFutureIntersection(Intersection intersection, Input line) {
+    //        return (intersection.x - line.px) / line.vx >= 0;
+    //    }
 }
