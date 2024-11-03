@@ -105,7 +105,7 @@ public class NeverTellMeTheOdds {
             }
         }
 
-        System.out.println(map);
+        System.out.println(map.values().stream().filter(c -> c.size() ==3).toList());
     }
 
     private static boolean validateLinesX(List<Input> lines, int v, long ox) {
@@ -129,6 +129,7 @@ public class NeverTellMeTheOdds {
         if (divide.compareTo(BigDecimal.ZERO) <0 ) {
             return false;
         }
+//                System.out.println("valid t " + divide);
         //TODO Test for positive t
         return  divide.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
 

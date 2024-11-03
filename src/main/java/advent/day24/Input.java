@@ -12,6 +12,15 @@ public class Input {
         this.vz = Long.parseLong(input[5]);
     }
 
+    public Input(long px, long py, long pz, long vx, long vy, long vz) {
+        this.px = px;
+        this.py = py;
+        this.pz = pz;
+        this.vx = vx;
+        this.vy = vy;
+        this.vz = vz;
+    }
+
     double a() {
         return (double) vy / vx;
     }
