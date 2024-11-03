@@ -21,6 +21,15 @@ public class Input {
         this.vz = vz;
     }
 
+    public Input(Input line, int vrx, int vry) {
+        this.px = line.px;
+        this.py = line.py;
+        this.pz = line.pz;
+        this.vx = line.vx - vrx;
+        this.vy = line.vy - vry;
+        this.vz = line.vz;
+    }
+
     double a() {
         return (double) vy / vx;
     }
