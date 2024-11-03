@@ -24,7 +24,7 @@ public class NeverTellMeTheOdds {
 
         List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
 //                                                List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
-        //                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
+//                                List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
 
         for (Input line : lines) {
 
@@ -163,45 +163,6 @@ public class NeverTellMeTheOdds {
         }
     }
 
-    private static void part2b(List<Input> lines) {
-        Input line0 = lines.get(0);
-        Input line1 = lines.get(1);
-        for (int vrx = -3; vrx < -2; vrx++) {
-            for (int vry = 1; vry < 2; vry++) {
-                ProjectedInput p0 = new ProjectedInput(line0.px, line0.py, line0.vx, line0.vy, vrx, vry);
-                ProjectedInput p1 = new ProjectedInput(line1.px, line1.py, line1.vx, line1.vy, vrx, vry);
-                Intersection intersect = intersect(p0, p1);
-                //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-                System.out.println(intersect);
-                //                }
-
-            }
-        }
-
-        for (int vrx = -3; vrx < -2; vrx++) {
-            for (int vrz = 2; vrz < 3; vrz++) {
-                ProjectedInput p0 = new ProjectedInput(line0.px, line0.pz, line0.vx, line0.vz, vrx, vrz);
-                ProjectedInput p1 = new ProjectedInput(line1.px, line1.pz, line1.vx, line1.vz, vrx, vrz);
-                Intersection intersect = intersect(p0, p1);
-                //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-                System.out.println(intersect);
-                //                }
-
-            }
-        }
-        for (int vry = 1; vry < 2; vry++) {
-            for (int vrz = 2; vrz < 3; vrz++) {
-                ProjectedInput p0 = new ProjectedInput(line0.py, line0.pz, line0.vy, line0.vz, vry, vrz);
-                ProjectedInput p1 = new ProjectedInput(line1.py, line1.pz, line1.vy, line1.vz, vry, vrz);
-                Intersection intersect = intersect(p0, p1);
-                //                if (intersect.x % 1 == 0 && intersect.y % 1 == 0 ) {
-                System.out.println(intersect);
-                //                }
-
-            }
-        }
-    }
-
     private static void part2(List<Input> lines) {
         Input line0 = lines.get(0);
         Input line1 = lines.get(1);
@@ -332,40 +293,52 @@ public class NeverTellMeTheOdds {
         //        return t % 1 == 0;
     }
 
-    private static Intersection intersect(Input line1, Input line2) {
-        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
-        double y1 = line1.a() * x + line1.b();
-        double y2 = line2.a() * x + line2.b();
-        return new Intersection(x, y1);
-    }
+//    private static Intersection intersect(Input line1, Input line2) {
+//        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
+//        double y1 = line1.a() * x + line1.b();
+//        double y2 = line2.a() * x + line2.b();
+//        return new Intersection(x, y1);
+//    }
+//
+//    private static Intersection intersect(ProjectedInput line1, ProjectedInput line2) {
+//        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
+//        double y1 = line1.a() * x + line1.b();
+//        double y2 = line2.a() * x + line2.b();
+//        return new Intersection(x, y1);
+//    }
 
-    private static Intersection intersect(ProjectedInput line1, ProjectedInput line2) {
-        double x = (line2.b() - line1.b()) / (line1.a() - line2.a());
-        double y1 = line1.a() * x + line1.b();
-        double y2 = line2.a() * x + line2.b();
-        return new Intersection(x, y1);
-    }
 
     private static Intersection intersect(LineAbc line1, LineAbc line2) {
         long d = line2.b * line1.a - line1.b * line2.a;
         if (d == 0) {
             return null;
         }
-        double x = (double) (line1.b * line2.c - line2.b * line1.c) / d;
-        double y = (double) (line1.c * line2.a - line2.c * line1.a) / d;
+        BigDecimal x = BigDecimal.valueOf (line1.b * line2.c - line2.b * line1.c).divide(BigDecimal.valueOf(d), 3, RoundingMode.HALF_UP);
+        BigDecimal y = BigDecimal.valueOf (line1.c * line2.a - line2.c * line1.a).divide(BigDecimal.valueOf(d), 3, RoundingMode.HALF_UP);
         return new Intersection(x, y);
     }
+
+
+//    private static Intersection intersect(LineAbc line1, LineAbc line2) {
+//        long d = line2.b * line1.a - line1.b * line2.a;
+//        if (d == 0) {
+//            return null;
+//        }
+//        double x = (double) (line1.b * line2.c - line2.b * line1.c) / d;
+//        double y = (double) (line1.c * line2.a - line2.c * line1.a) / d;
+//        return new Intersection(x, y);
+//    }
 
     private static boolean isParallel(Input line1, Input line2) {
         return line1.a() == line2.a();
     }
 
-    private static boolean isInCrossArea(Intersection intersection) {
-        return (intersection.x >= MIN && intersection.x <= MAX
-            && intersection.y >= MIN && intersection.y <= MAX);
-    }
+//    private static boolean isInCrossArea(Intersection intersection) {
+//        return (intersection.x >= MIN && intersection.x <= MAX
+//            && intersection.y >= MIN && intersection.y <= MAX);
+//    }
 
-    private static boolean isFutureIntersection(Intersection intersection, Input line) {
-        return (intersection.x - line.px) / line.vx >= 0;
-    }
+//    private static boolean isFutureIntersection(Intersection intersection, Input line) {
+//        return (intersection.x - line.px) / line.vx >= 0;
+//    }
 }
