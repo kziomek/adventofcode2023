@@ -1,7 +1,11 @@
 package advent.day24;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NeverTellMeTheOdds {
 
@@ -13,11 +17,13 @@ public class NeverTellMeTheOdds {
 
     private static final int N = 10;
 
+
+    // TODO collect result with example, then check with my input
     public static void main(String[] args) throws IOException {
 
         List<Input> lines = Parser.parse("src/main/resources/day24/example.txt");
-        //                        List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
-        //        List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
+//                                List<Input> lines = Parser.parse("src/main/resources/day24/my-input.txt");
+//                List<Input> lines = Parser.parse("src/main/resources/day24/my-input-short.txt");
 
         for (Input line : lines) {
 
@@ -60,37 +66,46 @@ public class NeverTellMeTheOdds {
 
     private static void part2(List<Input> lines) {
         Input line0 = lines.get(0);
+        Map<Integer, Map<Character, Long>> map = new HashMap<>();
+//        Map<Integer, Long> map = new HashMap<>();
 
-        for (int v = -3; v < -2; v++) {
-            System.out.println();
-            for (int t = 5; t < 6; t++) {
+        for (int v = -1 * N; v < N; v++) {
+            for (int t = 0; t < N; t++) {
                 long xr = line0.px + t * (line0.vx - v);
                 if (validateLinesX(lines, v, xr)) {
                     System.out.println("xr=" + xr + " vx=" + v + " t=" + t);
                     System.out.println();
+                    map.computeIfAbsent(t, k -> new HashMap<>());
+                    map.get(t).put('x', xr);
                 }
             }
         }
 
-        for (int v = 1; v < 2; v++) {
-            for (int t = 5; t < 6; t++) {
+        for (int v = -1 * N; v < N; v++) {
+            for (int t = 1; t < N; t++) {
                 long yr = line0.py + t * (line0.vy - v);
                 if (validateLineY(lines, v, yr)) {
                     System.out.println("yr=" + yr + " vy=" + v + " t=" + t);
                     System.out.println();
+                    map.computeIfAbsent(t, k -> new HashMap<>());
+                    map.get(t).put('y', yr);
                 }
             }
         }
         //
-        for (int v = 2; v < 3; v++) {
-            for (int t = 5; t < 6; t++) {
+        for (int v = -1 * N; v < N; v++) {
+            for (int t = 1; t < N; t++) {
                 long zr = line0.pz + t * (line0.vz - v);
                 if (validateLineZ(lines, v, zr)) {
                     System.out.println("zr=" + zr + " vz=" + v + " t=" + t);
                     System.out.println();
+                    map.computeIfAbsent(t, k -> new HashMap<>());
+                    map.get(t).put('z', zr);
                 }
             }
         }
+
+        System.out.println(map);
     }
 
     private static boolean validateLinesX(List<Input> lines, int v, long ox) {
@@ -104,9 +119,22 @@ public class NeverTellMeTheOdds {
     }
 
     private static boolean validX(Input line, int vr, long xr) {
-        double t = (double) (xr - line.px) / (line.vx - vr);
-        System.out.println("valid t " + t);
-        return t % 1 == 0;
+        BigDecimal divide ;
+        try {
+            divide =BigDecimal.valueOf(xr - line.px).divide(BigDecimal.valueOf((line.vx - vr)), 3, RoundingMode.HALF_UP);
+        } catch (ArithmeticException ex) {
+            return false;
+        }
+
+        if (divide.compareTo(BigDecimal.ZERO) <0 ) {
+            return false;
+        }
+        //TODO Test for positive t
+        return  divide.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
+
+//        double t = (double) (xr - line.px) / (line.vx - vr);
+//                System.out.println("valid t " + t);
+//        return t % 1 == 0;
     }
 
     private static boolean validateLineY(List<Input> lines, int v, long oy) {
@@ -120,9 +148,21 @@ public class NeverTellMeTheOdds {
     }
 
     private static boolean validY(Input line, int vr, long yr) {
-        double t = (double) (yr - line.py) / (line.vy - vr);
-        System.out.println("valid t " + t);
-        return t % 1 == 0;
+        BigDecimal divide ;
+        try {
+            divide =BigDecimal.valueOf(yr - line.py).divide(BigDecimal.valueOf((line.vy - vr)), 3, RoundingMode.HALF_UP);
+        } catch (ArithmeticException ex) {
+            return false;
+        }
+//        System.out.println("valid t " + divide);
+        if (divide.compareTo(BigDecimal.ZERO) <0 ) {
+            return false;
+        }
+        return  divide.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
+
+//        double t = (double) (yr - line.py) / (line.vy - vr);
+//        //        System.out.println("valid t " + t);
+//        return t % 1 == 0;
     }
 
     private static boolean validateLineZ(List<Input> lines, int v, long oz) {
@@ -135,9 +175,21 @@ public class NeverTellMeTheOdds {
     }
 
     private static boolean validZ(Input line, int vr, long zr) {
-        double t = (double) (zr - line.pz) / (line.vz - vr);
-        System.out.println("valid t " + t);
-        return t % 1 == 0;
+        BigDecimal divide ;
+        try {
+            divide =BigDecimal.valueOf(zr - line.pz).divide(BigDecimal.valueOf((line.vz - vr)), 3, RoundingMode.HALF_UP);
+        } catch (ArithmeticException ex) {
+            return false;
+        }
+
+        if (divide.compareTo(BigDecimal.ZERO) <0 ) {
+            return false;
+        }
+        return  divide.remainder(BigDecimal.ONE).compareTo(BigDecimal.ZERO) == 0;
+
+//        double t = (double) (zr - line.pz) / (line.vz - vr);
+//        //        System.out.println("valid t " + t);
+//        return t % 1 == 0;
     }
 
     private static Intersection intersect(Input line1, Input line2) {
