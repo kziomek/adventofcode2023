@@ -8,6 +8,11 @@ import java.util.List;
  * But we can find two pair of these nodes.
  * Then we can remove path completely (bridge and other paths)
  * I think it works because 3 edges bridge is min cut.
+ *
+ * Implementation is closest to Ford-Fulkerson algorithm to calculate maximum flow.
+ *
+ * Other most likely good choice is Karger's algorithm. Also, potentially Stoer–Wagner algorithm.
+ *
  */
 public class Snowverload {
     public static void main(String[] args) throws IOException {
