@@ -9,7 +9,8 @@ import java.util.List;
  * Then we can remove path completely (bridge and other paths)
  * I think it works because 3 edges bridge is min cut.
  *
- * Implementation is closest to Ford-Fulkerson algorithm to calculate maximum flow.
+ * Implementation is modification of Ford-Fulkerson algorithm to calculate maximum flow.
+ * In fact it's pretty much Edmonds-Karp algorithm as it's selecting shortest path between source and sink using BFS algorithm.
  *
  * Other most likely good choice is Karger's algorithm. Also, potentially Stoer–Wagner algorithm.
  *
