@@ -39,7 +39,6 @@ public class BFS {
         while (!queue.isEmpty()) {
             Node node = queue.poll();
             System.out.println(node.name);
-            seen.add(node);
             lastElement = node;
             for (Node connection : node.connections) {
                 if (!seen.contains(connection)) {
