@@ -33,6 +33,7 @@ public class BFS {
         System.out.println("Node name: " + startNode.name);
         Map<Node, Node> previous = new HashMap<>();
         Set<Node> seen = new HashSet<>();
+        seen.add(startNode);
         Node lastElement = null;
         Queue<Node> queue = new LinkedList<>();
         queue.add(startNode);
