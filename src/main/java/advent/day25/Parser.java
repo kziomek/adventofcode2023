@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Parser {
 
@@ -26,7 +25,7 @@ public class Parser {
                 Node node2 = getNode(dict, conn);
                 node1.connections.add(node2);
                 node2.connections.add(node1);
-                System.out.println(conn + " " + name1);
+//                System.out.println(conn + " " + name1);
             }
         }
 

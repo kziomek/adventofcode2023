@@ -30,7 +30,7 @@ public class BFS {
     }
 
     public static List<Node> farthestPath(Node startNode) {
-        System.out.println("Node name: " + startNode.name);
+        System.out.println("Start Node name: " + startNode.name);
         Map<Node, Node> previous = new HashMap<>();
         Set<Node> seen = new HashSet<>();
         seen.add(startNode);
@@ -39,7 +39,6 @@ public class BFS {
         queue.add(startNode);
         while (!queue.isEmpty()) {
             Node node = queue.poll();
-            System.out.println(node.name);
             lastElement = node;
             for (Node connection : node.connections) {
                 if (!seen.contains(connection)) {
