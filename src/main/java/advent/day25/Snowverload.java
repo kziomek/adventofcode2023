@@ -28,6 +28,7 @@ public class Snowverload {
         System.out.println("Graph size: " + graphSize);
 
         for (int i = 0; i < 3; i++) {
+            // if it does not remove minimum cut edges, we need to pick another start node, but selected one works for my input and example input
             findAndRemovePath(nodes.get(1));
         }
 
