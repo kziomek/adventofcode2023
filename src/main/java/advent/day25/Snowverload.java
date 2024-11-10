@@ -11,6 +11,11 @@ import java.util.List;
  *
  * Implementation is modification of Ford-Fulkerson algorithm to calculate maximum flow.
  * In fact it's pretty much Edmonds-Karp algorithm as it's selecting shortest path between source and sink using BFS algorithm.
+ * https://en.wikipedia.org/wiki/Edmonds%E2%80%93Karp_algorithm
+ * https://www.youtube.com/watch?v=RppuJYwlcI8&ab_channel=WilliamFiset
+ *
+ * Visualising graphs
+ * https://csacademy.com/app/graph_editor/
  *
  * Other most likely good choice is Karger's algorithm. Also, potentially Stoer–Wagner algorithm.
  *
